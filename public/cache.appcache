@@ -1,0 +1,7 @@
+CACHE MANIFEST
+
+FALLBACK:
+/
+/resources/app/client/dist/css/app.css
+/resources/app/client/dist/img/logo/logo.png
+/resources/app/client/dist/js/app.js

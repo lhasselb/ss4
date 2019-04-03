@@ -1,0 +1,96 @@
+@import "../_variables";
+// Bootstrap v4
+//@import "~bootstrap/scss/tables";
+//bootstrap-sass - Bootstrap v3
+@import "~bootstrap-sass/assets/stylesheets/bootstrap/tables";
+
+/* ===========
+ * Images
+ * ============= */
+ img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem;
+}
+
+img {
+    &.left {
+        float: left;
+        clear: left;
+        max-width: 50%;
+        margin-left: 0;
+    }
+    &.leftAlone {
+        float: left;
+        clear: both;
+        margin-right: 100%;
+        margin-left: 0;
+    }
+    &.center {
+        display: block;
+        // tb lr
+        margin: 1rem auto;
+        clear: both;
+        float: none;
+    }
+    &.right {
+        float: right;
+        clear: right;
+        margin-right: 0;
+    }
+}
+
+/* ===========
+ * Text
+ * ============= */
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+/* ===========
+ * Tables
+ * ============= */
+.table>thead>tr>th {
+    font-weight: 500;
+    font-size: 17px;
+    color: #3f444a;
+}
+
+table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+
+    @extend .table;
+
+    @extend .table-bordered;
+
+    @extend .table-striped;
+}
+
+/* ===========
+ * Links
+ * ============= */
+a {
+    color: #57bfe1;
+    font-weight: 500;
+}
+
+a:hover {
+    color: #fff;
+    /*#5c6873;*/
+    background-color: #57bfe1;
+    cursor: pointer;
+}

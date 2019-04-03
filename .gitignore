@@ -1,0 +1,16 @@
+/app/client/dist
+/app/client/src/thirdparty/
+/node_modules
+/public/assets
+/public/resources
+/public/install.php
+/public/install-frameworkmissing.html
+/silverstripe-cache
+/themes
+/vendor
+.env
+.DS_Store
+silverstripe.log
+/site/client/dist
+yarn-error\.log
+package-lock.json

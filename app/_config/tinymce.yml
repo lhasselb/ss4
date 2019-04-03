@@ -1,0 +1,10 @@
+# Add css to editor
+SilverStripe\Forms\HTMLEditor\TinyMCEConfig:
+  editor_css:
+    - 'app/client/dist/css/editor.css'
+
+# Add links to Dataobject's
+FLxLabs\DataObjectLink\DataObjectLinkModalExtension:
+  classes:
+    Jimev\Models\Gallery: 'Fotoalbum'
+    Jimev\Models\Project: 'Projekt'

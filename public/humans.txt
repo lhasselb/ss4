@@ -1,0 +1,11 @@
+/* AUTHOR */
+Name: lhasselb
+
+/* TEAM */
+Site: https://sybeha.de/
+
+/* SITE */
+Doctype: HTML5
+IDE: Visual Source Code, Sublime Text, Gimp, Transmit
+Framework: SilverStripe
+Language: German

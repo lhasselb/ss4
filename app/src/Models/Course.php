@@ -1,0 +1,521 @@
+<?php
+
+namespace Jimev\Models;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\Controller;
+use SilverStripe\Assets\Image;
+use SilverStripe\Security\Permission;
+//use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\DateField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\View\Parsers\URLSegmentFilter;
+
+// See https://github.com/stevie-mayhew/hasoneedit/blob/master/src/HasOneEdit.php
+use SGN\HasOneEdit\HasOneEdit;
+
+use Jimev\Pages\SectionPage;
+use Jimev\Models\News;
+
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
+
+/**
+ * Course DataObject to store courses.
+ *
+ * @package Jimev
+ * @subpackage Model
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2019 [sybeha]
+ * @license see license file in modules root directory
+ */
+class Course extends DataObject
+{
+    private static $singular_name = 'Kurs';
+    private static $plural_name = 'Kurse';
+
+    /*
+     * Important: Please note: It is strongly recommended to define a table_name for all namespaced models.
+     * Not defining a table_name may cause generated table names to be too long
+     * and may not be supported by your current database engine.
+     * The generated naming scheme will also change when upgrading to SilverStripe 5.0 and potentially break.
+     *
+     * Defines the database table name
+     * @var string
+     */
+    private static $table_name = 'Course';
+
+    /**
+     * Database fields
+     * @var array
+     */
+    private static $db = [
+        'CourseTitle' => 'Varchar(255)',
+        'CourseContent' => 'HTMLText',
+        'URLSegment' => 'Varchar(255)',
+        'CourseShort' => 'HTMLText',    //Not used any more, but kept for compatibility
+        'LastUsedByNews' => 'Date' // Added with migration to 4.0 to store the News.ExpireDate
+    ];
+
+    /**
+     * Has_one relationship
+     * @var array
+     */
+    private static $has_one = [
+        'CourseImage' => Image::class,
+        'News' => News::class
+    ];
+
+    /**
+     * A course might be in different Sections
+     * many_many relationship
+     * @var array
+     */
+    private static $many_many = [
+        'Sections' => SectionPage::class
+    ];
+
+    /*
+     * @config
+     * @var array List of has_many or many_many relationships owned by this object.
+     */
+    private static $owns = ['CourseImage'];
+
+    /*
+     * @config
+     * @var array List of has_many or many_many relationships which should be deleted with this object.
+     */
+    private static $cascade_deletes = ['News'];
+    /*
+     * @config
+     * @var array List of has_many or many_many relationships which should be duplicated with this object.
+     */
+    private static $cascade_duplicates = [ 'News' ];
+
+    /**
+     * TODO: Add translation ?
+     * Defines summary fields commonly used in table columns
+     * as a quick overview of the data for this dataobject
+     * @var array
+     */
+    private static $summary_fields = [
+        'CourseTitle' => 'Kurstitel',
+        //'URLSegment' => 'URL-Segment',
+        'SectionList' => 'Bereiche',
+        'CourseImage.StripThumbnail' => 'Miniaturbild',
+    ];
+
+    /**
+     * Hint: Use SortOrder with 3rd party module for DragAndDrop sorting
+     * Defines a default sorting (e.g. within gridfield)
+     * @var string
+     */
+    private static $default_sort = 'NewsID DESC'; // e.g. 'ID DESC' or 'CourseTitel ASC' 'Created DESC' or 'LastEdited DESC'
+
+    /**
+     * Defines a default list of filters for the search context
+     * @var array
+     */
+    private static $searchable_fields = ['CourseTitle'];
+
+    /**
+     * Set object defaults
+     */
+    public function populateDefaults()
+    {
+        //Not implemented
+    }
+
+    /**
+     * / Used for $summary_fields
+     *
+     * @return void
+     */
+    public function getSectionList()
+    {
+        if ($this->Sections()->exists()) {
+            return implode(', ', $this->Sections()->column('Title'));
+        }
+    }
+
+    /**
+     * @return FieldList
+     */
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        //TODO: Add translation
+        $fields->fieldByName('Root.Main')->setTitle('Kursdetails');
+
+        /**
+         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
+         * added in SS 4.2 until 4.3 is available
+         *
+         * Related GitHub issues and PRs:
+         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
+         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
+         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
+         * */
+        $fields->removeByName(['FileTracking', 'LinkTracking']);
+
+        // Remove "autogenerated" (by manymany relation) Sections tab
+        $fields->removeByName(['Sections']);
+
+        // Remove "autogenerated" (by has_one relation) NewsId field
+        $fields->removeByName(['NewsID']);
+
+        if (Permission::check('ADMIN')) {
+            // Get all existing news
+            $newsList = News::get()->map('ID', 'Title');
+            // Only to replace - DOES NOT WORK ON NEW (because of HasOneEdit)
+            if ($this->NewsID > 0) {
+                //Injector::inst()->get(LoggerInterface::class)->debug('Course - getCMSFields() guessing for ' . $this->Title);
+                $matchTitelList =  News::get()->filter(['NewsTitle' => $this->Title]);
+                // Try to find exact match
+                if (count($matchTitelList) == 1) {
+                    $newsList = $matchTitelList->map('ID', 'TitleWithDate');
+                } else {
+                    // Try to find a match starting with the first word
+                    $startingWord = explode(' ', trim($this->Title))[0];
+                    $guessList = News::get()->filter(['NewsTitle:StartsWith' => $startingWord])->sort('ExpireDate', 'DESC');
+                    if (count($guessList) == 1) {
+                        //Injector::inst()->get(LoggerInterface::class)->debug('Course - getCMSFields() guesssed  = ' . $guessList->first()->Title);
+                        $newsList = $guessList->map('ID', 'TitleWithDate');
+                    } elseif (count($guessList) > 1) {
+                        //Injector::inst()->get(LoggerInterface::class)->debug('Course - getCMSFields() found = ' . count($guessList) . ' entries');
+                        foreach ($guessList as $news) {
+                            // Injector::inst()->get(LoggerInterface::class)->debug('News = ' . $news->Title . ' date ' . $news->ExpireDate);
+                        }
+                        $newsList = $guessList->map('ID', 'TitleWithDate');
+                    }
+                }
+            }
+
+            //$newsDropdown = DropdownField::create('NewsID', 'News', News::get()->map('ID', 'Title'))
+            $newsDropdown = DropdownField::create('NewsID', 'News', $newsList)
+            ->setEmptyString('(Bitte auswählen)');
+            $newsDropdown->setDescription('Dieses Feld ist nur für Administratoren sichtbar!');
+            $fields->addFieldToTab('Root.Main', $newsDropdown);
+            //TODO: Show URLSegment ?
+        }
+
+        // Remove "autogenerated" CourseShort field
+        $fields->removeByName(['CourseShort']);
+
+        // Hide LastUsedByNews
+        $fields->removeByName(['LastUsedByNews']);
+
+        $fields->addFieldsToTab('Root.Verknüpfte News', HasOneEdit::getInlineFields($this, 'News'));
+
+        $fields->addFieldToTab('Root.Main', new LiteralField('Info', '
+        <p><span style="color:red;">Achtung: </span>
+        <strong>
+            Beim erstmaligen speichern eines Kurses wird automatisch auch eine News mit identischem Titel angelegt.
+            <br/>
+            Sie wird jedoch erst dann auf der Startseite angezeigt wenn beim editieren
+            ein Ablauf-Datum gesetzt wird.
+        </strong>
+        </p>'));
+        //http://jimev.internal.epo.org/admin/newsmanager/
+
+        $fields->addFieldToTab('Root.Main', TextField::create('CourseTitle', $this->fieldLabel('Title'))
+            ->setDescription('Der Titel des Kurses, Workshops oder der Veranstaltung.'));
+
+        $fields->removeByName('URLSegment');
+
+        $map = SectionPage::get()->map();
+        $sectionCheck = CheckboxSetField::create('Sections', 'Bereiche', $map);
+        $fields->addFieldToTab('Root.Main', $sectionCheck);
+
+        $courseImage = new UploadField('CourseImage', $this->fieldLabel('CourseImage'));
+        $courseImage->setIsMultiUpload(false);
+        $courseImage->getValidator()->allowedExtensions = ['jpg', 'gif', 'png'];
+        $courseImage->setFolderName('kurse')->setFolderName('kurse');
+        $fields->addFieldToTab('Root.Main', $courseImage);
+
+        $fields->removeByName('CourseShort');
+
+        $fields->addFieldToTab(
+            'Root.Main',
+            HtmlEditorField::create(
+                'CourseContent',
+                $this->fieldLabel('CourseContent'),
+                ''
+                //'location'
+            )
+        );
+
+        return $fields;
+    }
+
+    public function fieldLabels($includerelations = true)
+    {
+        $labels = parent::fieldLabels($includerelations);
+        $labels['CourseTitle'] = 'Kursname';
+        //$labels['URLSegment'] = 'URL-Segment';
+        //$labels['CourseShort'] = 'Kurs-News-Inhalt';
+        $labels['CourseContent'] = 'Kurs-Inhalt';
+        $labels['CourseImage'] = 'Kurs-Bild';
+        $labels['HomepageSection'] = 'Bereich';
+        $labels['Sections'] = 'Bereiche';
+        return $labels;
+    }
+
+    /**
+     * Overwrite default for title
+     *
+     * @return String
+     */
+    public function getTitle()
+    {
+        return $this->CourseTitle;
+    }
+
+    /**
+     * Create a menu title
+     * Used within BreadcrumbsTemplate
+     * @return String
+     */
+    public function getMenuTitle()
+    {
+        return $this->CourseTitle;
+    }
+
+    /**
+     * Use date from News to sort Courses
+     *
+     * @return Date
+     */
+    public function getCourseDate()
+    {
+        //Injector::inst()->get(LoggerInterface::class)->debug('Course - getCourseDate() NewsID = ' . $this->NewsID);
+        $date = $this->Created;
+        if ($this->NewsID) {
+            $date = News::get()->byId($this->NewsID)->ExpireDate; // NewsDate
+            Injector::inst()->get(LoggerInterface::class)->debug('Course - getCourseDate() date = ' . $date);
+        }
+        return $date;
+    }
+
+    public function validate()
+    {
+        $result = parent::validate();
+        if (empty($this->CourseTitle)) {
+            $result->addError('Bitte einen Titel angeben!');
+        }
+        return $result;
+    }
+
+    public function onBeforeWrite()
+    {
+        // CLONE: Check on first write action, aka "database row creation" (ID-property is not set)
+        if (!$this->isInDb()) {
+            if (!empty($this->CourseTitle)) {
+                // Check for title duplicate // Cloning
+                $existingCourseTitleList = Course::get()->filter(['CourseTitle' => $this->NewsTitle]);
+                if ($existingCourseTitleList->count() > 0) {
+                    Injector::inst()->get(LoggerInterface::class)->debug('Course - onBeforeWrite() found copy');
+                    $this->CourseTitle = 'Kopie von ' . $this->CourseTitle;
+                }
+            }
+        }
+
+        parent::onBeforeWrite();
+
+        if (!empty($this->NewsID)) {
+            $news = News::get_by_id($this->NewsID);
+            $write = false;
+            // Not yet used - might be used for sorting in the future?
+            if ($news->ExpireDate) {
+                $this->LastUsedByNews = $news->ExpireDate;
+            }
+
+            //Content
+            if (empty($news->NewsContent) && !empty($this->CourseContent)) {
+                $news->NewsContent = $this->CourseContent;
+                $write = true;
+            }
+
+            //Section
+            if ($news->HomepageSectionID == 0 && count($this->Sections()) == 1) {
+                $sectionTitle = $this->Sections()->first()->Title;
+                $sectionPage = SectionPage::get()->filter(['Title' => $sectionTitle])->first();
+                //Injector::inst()->get(LoggerInterface::class)->debug('Course - onBeforeWrite() news section id ' . $section->ID);
+                if ($sectionPage) {
+                    $news->HomepageSectionID = $sectionPage->ID;
+                    $write = true;
+                }
+            }
+
+            //Image
+            if (empty($news->NewsImageID) && !empty($this->CourseImageID)) {
+                $news->NewsImageID = $this->CourseImageID;
+                $write = true;
+            }
+
+            if ($write) {
+                $news->write();
+            }
+        }
+
+        // If there is no URLSegment set, generate one from Title
+        if (!$this->URLSegment) {
+            $this->URLSegment = $this->generateURLSegment($this->CourseTitle);
+        } elseif ($this->isChanged('URLSegment')) {
+            // Make sure the URLSegment is valid for use in a URL
+            $segment = preg_replace('/[^A-Za-z0-9]+/', '-', $this->URLSegment);
+            $segment = preg_replace('/-+/', '-', $segment);
+            // If after sanitising there is no URLSegment, give it a reasonable default
+            if (!$segment) {
+                $segment = "item-$this->ID";
+            }
+            $this->URLSegment = $segment;
+        }
+            // Ensure that this object has a non-conflicting URLSegment value.
+            $count = 2;
+            $URLSegment = $this->URLSegment;
+            $ID = $this->ID;
+        while ($this->LookForExistingURLSegment($URLSegment, $ID)) {
+            $URLSegment = preg_replace('/-[0-9]+$/', null, $URLSegment) . '-' . $count;
+            $count++;
+        }
+        $this->URLSegment = $URLSegment;
+    }
+
+    /**
+     * Check if there is already a DOAP with this URLSegment
+     */
+    public function LookForExistingURLSegment($URLSegment, $ID)
+    {
+        return Course::get()->filter(
+            'URLSegment',
+            $URLSegment
+        )->exclude('ID', $ID)->exists();
+    }
+
+    /**
+     * Generate a URL segment based on the title provided.
+     *
+     * If {@link Extension}s wish to alter URL segment generation, they can do so by defining
+     * updateURLSegment(&$url, $title).  $url will be passed by reference and should be modified.
+     * $title will contain the title that was originally used as the source of this generated URL.
+     * This lets extensions either start from scratch, or incrementally modify the generated URL.
+     *
+     * @param string $title Page title.
+     * @return string Generated url segment
+     */
+    public function generateURLSegment($title)
+    {
+        $filter = URLSegmentFilter::create();
+        $t = $filter->filter($title);
+
+        // Fallback to generic page name if path is empty (= no valid, convertable characters)
+        if (!$t || $t == '-' || $t == '-1') {
+            $t = "page-$this->ID";
+        }
+
+        // Hook for extensions
+        $this->extend('updateURLSegment', $t, $title);
+
+        return $t;
+    }
+
+    /**
+     * Create a link for this DataObject
+     *
+     * @return string combined url
+     */
+    public function Link()
+    {
+        //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() numer of related sections for thise Course = ' . $this->Sections()->count());
+        if ($this->isInDB()) {
+            //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() controller = ' . Controller::curr());
+            // For HomePage
+            if (Controller::curr() == 'HomePage_Controller') {
+                // HomepageSection is stored in related News
+                $news = News::get()->byID($this->NewsID);
+                //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() related news = ' . $section);
+                if ($news->HomepageSectionID) {
+                    $section = SectionPage::get()->by_id($this->HomepageSectionID);
+                    //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() news homepage section = ' . $section);
+                    return Controller::join_links($section->Link(), 'kurs', $this->URLSegment);
+                }
+            } else {
+                // SectionPage
+                // Course is just linked once
+                if ($this->Sections()->count() == 1) {
+                    return Controller::join_links($this->Sections()->First()->Link(), 'kurs', $this->URLSegment);
+                } elseif ($this->Sections()->count() > 1) {
+                    // Course is linked several times
+                    foreach ($this->Sections() as $section) {
+                        // Create link for current context
+                        if ($section->Link() == Controller::curr()->Link()) {
+                            return Controller::join_links($section->Link(), 'kurs', $this->URLSegment);
+                        }
+                    } //foreach
+                }
+            }
+        }
+        return '';
+    }
+
+    /**
+     * @var array
+     */
+    protected static $_cached_get_by_url = array();
+
+    /**
+     * @param $str
+     * @return Course|Boolean
+     */
+    public static function get_by_url_segment($str, $excludeID = null)
+    {
+        //Injector::inst()->get(LoggerInterface::class)->debug('Course - get_by_url_segment() get  = ' . $str);
+        if (!isset(static::$_cached_get_by_url[$str])) {
+            $list = static::get()->filter('URLSegment', $str);
+            if ($excludeID) {
+                $list = $list->exclude('ID', $excludeID);
+            }
+            $obj = $list->First();
+            static::$_cached_get_by_url[$str] = ($obj && $obj->exists()) ? $obj : false;
+        }
+        return static::$_cached_get_by_url[$str];
+    }
+
+    // All Permission use autogenerated Admin based permissions "CMS_ACCESS_CourseAdmin"
+
+    /**
+     * Permission canView
+     *
+     * @param [type] $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        return Permission::check('CMS_ACCESS_CourseAdmin', 'any', $member);
+    }
+
+    public function canEdit($member = null)
+    {
+        return Permission::check('CMS_ACCESS_CourseAdmin', 'any', $member);
+    }
+
+    // Admins only
+    public function canDelete($member = null)
+    {
+        return Permission::check('CMS_ACCESS_LeftAndMain', 'any', $member); //CMS_ACCESS_CourseAdmin
+    }
+
+    public function canCreate($member = null, $context = [])
+    {
+        return Permission::check('CMS_ACCESS_CourseAdmin', 'any', $member);
+    }
+}

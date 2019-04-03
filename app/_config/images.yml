@@ -1,0 +1,75 @@
+---
+Name: resamplefiles
+---
+# Please note that turning this feature on can increase the server
+# memory requirements, and is off by default to conserve resources.
+#SilverStripe\Assets\File:
+#  force_resample: true
+#SilverStripe\Assets\Storage\DBFile:
+#  force_resample: true
+# ----------------------------------
+# ----------------------------------
+# Settings for IMAGES
+# ----------------------------------
+SilverStripe\Core\Injector\Injector:
+ SilverStripe\Assets\Image_Backend:
+   properties:
+     Quality: 90
+# ----------------------------------
+# ----------------------------------
+# Switch Image library for migration (disable again !)
+# ----------------------------------
+SilverStripe\Core\Injector\Injector:
+  Intervention\Image\ImageManager:
+    constructor:
+      - { driver: imagick }
+# ----------------------------------
+# ----------------------------------
+# Automatically migrate file
+# ----------------------------------
+# See https://docs.silverstripe.org/en/4/developer_guides/files/file_migration/
+# MigrateFileTask
+#SilverStripe\Assets\File:
+#  migrate_legacy_file: true
+# ----------------------------------
+# ----------------------------------
+# Settings for UploadField
+# ----------------------------------
+SilverStripe\Assets\Upload_Validator:
+  default_max_file_size:
+    '[image]': '1M'
+    'jpg': '1M'
+# ----------------------------------
+# ----------------------------------
+# FocusPoint
+# See https://github.com/jonom/silverstripe-focuspoint
+# No settings required
+#JonoM\FocusPoint\Forms\FocusPointField:
+#  max_width: 500
+#  max_height: 300
+# ----------------------------------
+# ----------------------------------
+# ScaledUploads
+# See https://github.com/axllent/silverstripe-scaled-uploads
+Axllent\ScaledUploads\ScaledUploads:
+  max_width: 1600            # Maximum width - default 960
+  max_height: 1200           # Maximum height - default 800
+  auto_rotate: true         # Automatically rotate images that rely on exif information for rotation - default true
+#  bypass: false             # Bypass (skip) this plugin when uploading - default false
+#  force_resampling: true    # Force re-saving the image even if it is smaller - default false
+#  custom_folders:
+#    Gallery:                 # Custom upload folder and configuration
+#      max_width: 1600
+#      max_height: 1200
+#    ProfileImages:           # Custom upload folder and configuration
+#      max_width: 400
+#      max_height: 400
+# ----------------------------------
+# ----------------------------------
+# GalleryImageExtension added for gallery to create a thumbnail and a stage image
+SilverStripe\Assets\Image:
+  extensions:
+    - Jimev\Extensions\GalleryImageExtension
+SilverStripe\Assets\Storage\DBFile:
+  extensions:
+    - Jimev\Extensions\GalleryImageExtension

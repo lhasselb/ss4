@@ -1,0 +1,64 @@
+#Menu-SilverStripe-CampaignAdmin-CampaignAdmin {
+    display: none;
+}
+
+/************************
+ ModelAdmin ICONS
+ ************************/
+ [class*=" modeladmin-icon-"]:before,
+ [class^=modeladmin-icon-]:before {
+    color: #5589a7;
+    content: "";
+    display:inline-block;
+    width:16px;
+    height:16px;
+    background-repeat: no-repeat;
+ }
+
+ /* ClubMaster */
+.modeladmin-icon-clubmanager:before {
+    background-image: url(../../icons/clubmaster.png);
+}
+ /* News */
+ .modeladmin-icon-newsmanager:before {
+    background-image: url(../../icons/news.gif);
+}
+ /* Gallery */
+ .modeladmin-icon-galleriesmanager:before {
+    background-image: url(../../icons/gallery.png);
+    //background-image: url(../../icons/fotos.png);
+}
+ /* Course */
+ .modeladmin-icon-coursesmanager:before {
+    background-image: url(../../icons/workshops.png);
+}
+ /* Project */
+ .modeladmin-icon-projectsmanager:before {
+    background-image: url(../../icons/projects.png);
+}
+/************************
+ Page ICONS will be served as image from public/resources/app/client/dist/img/..
+ ************************/
+/*
+.page-icon:before, a .jstree-pageicon:before {
+    content: "";
+ }
+[class*=" class-Jimev_Pages_"]:before,
+[class^=class-Jimev_Pages_]:before {
+    color: #5589a7;
+    display:inline-block;
+    width:16px;
+    height:16px;
+    background-repeat: no-repeat;
+    background: transparent;
+ }
+ .page-icon[class*=" class-Jimev_Pages_"],
+ .page-icon[class^=class-Jimev_Pages_] {
+    background-image: none;
+ }
+ .class-Jimev_Pages_HomePage:before {
+    background-image: url(../../icons/home.png);
+}
+.class-Jimev_Pages_CalendarPage:before {
+    background-image: url(../../icons/calendar.png);
+}*/

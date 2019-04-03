@@ -1,0 +1,11 @@
+# Important: Place this file into /app/_config/webpack.yml
+# with all configuration variables presented
+# WebPack compiling script use this to set configuration
+
+Site\Templates\WebpackTemplateProvider:
+  SRC: app/client/src
+  DIST: app/client/dist
+  HOSTNAME: ss4.test
+  PORT: 3000
+  TYPESJS: app/client/src/js/types
+  TYPESSCSS: app/client/src/scss/types

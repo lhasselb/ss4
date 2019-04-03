@@ -1,0 +1,10 @@
+
+/**
+ *  THIS IS NOT INCLUDED!
+ *  Using CDN within Site\Templates\DeferedRequirements
+ *  Import animate.css See https://github.com/daneden/animate.css
+ *  _base.ss is required - but you can select the desired effect like fade in _fadeIn.css.
+ *  And then you can pull-in/remove effects as you wish.
+ */
+@import "~animate.css/source/_base.css";
+@import "~animate.css/source/fading_entrances_fadeIn.css";

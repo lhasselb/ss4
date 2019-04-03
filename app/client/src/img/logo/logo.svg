@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="185.000000pt"
+   height="82.000000pt"
+   viewBox="0 0 185.000000 82.000000"
+   preserveAspectRatio="xMidYMid meet"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="JimLogo2.svg"
+   inkscape:export-filename="/Users/tommy/Downloads/logo-mobile.png"
+   inkscape:export-xdpi="35.810001"
+   inkscape:export-ydpi="35.810001">
+  <metadata
+     id="metadata38">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs36" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1568"
+     inkscape:window-height="898"
+     id="namedview34"
+     showgrid="false"
+     inkscape:zoom="1.5654054"
+     inkscape:cx="115.625"
+     inkscape:cy="102.35497"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <g
+     transform="translate(0.000000,82.000000) scale(0.100000,-0.100000)"
+     fill="#000000"
+     stroke="none"
+     id="g4">
+    <path
+       d="M506 764 c-58 -32 -143 -55 -224 -61 -85 -6 -121 -20 -107 -43 13 -21 167 -6 258 24 43 14 80 26 82 26 5 0 3 -22 -11 -140 -18 -152 -80 -329 -139 -399 -49 -57 -126 -77 -184 -47 -15 8 -44 33 -65 56 -36 40 -66 48 -66 17 0 -20 72 -92 112 -113 18 -10 56 -18 84 -18 95 -2 184 79 234 212 57 149 108 474 78 493 -17 11 -18 11 -52 -7z"
+       id="path6" />
+    <path
+       d="M309 593 c-16 -19 -17 -22 -4 -12 27 23 62 32 70 19 3 -5 11 -10 17 -10 7 0 6 6 -2 15 -19 23 -54 18 -81 -12z"
+       id="path8" />
+    <path
+       d="M841 568 c-136 -326 -133 -317 -119 -342 15 -26 25 -19 31 22 2 20 27 88 54 150 l50 114 6 -82 c3 -55 10 -88 21 -98 8 -9 17 -14 19 -11 2 2 26 36 54 74 28 39 65 83 83 100 l31 30 -27 -70 c-55 -145 -71 -220 -48 -229 8 -3 16 0 18 7 2 6 9 34 15 61 7 28 30 97 52 155 39 105 40 129 3 117 -23 -7 -108 -86 -152 -141 l-32 -40 -1 35 c-3 163 -3 165 -26 168 -16 2 -26 -4 -32 -20z"
+       id="path10" />
+    <path
+       d="M115 570 c-4 -7 2 -9 18 -5 14 4 36 2 49 -5 22 -11 22 -10 4 4 -23 18 -62 21 -71 6z"
+       id="path12" />
+    <path
+       d="M305 540 c-3 -6 1 -7 9 -4 18 7 21 14 7 14 -6 0 -13 -4 -16 -10z"
+       id="path14" />
+    <path
+       d="M353 536 c9 -10 17 -27 17 -39 -1 -20 -2 -20 -11 -4 -12 20 -28 21 -52 3 -25 -20 -6 -56 29 -56 46 0 59 93 14 108 -11 4 -10 1 3 -12z"
+       id="path16" />
+    <path
+       d="M1587 534 c-4 -4 -7 -71 -7 -149 0 -125 2 -144 18 -158 29 -27 50 -20 83 26 43 59 119 218 118 247 0 18 -13 -1 -43 -60 -66 -132 -120 -210 -135 -195 -3 4 -6 70 -6 148 0 131 -6 162 -28 141z"
+       id="path18" />
+    <path
+       d="M132 518 c-24 -24 -4 -88 28 -88 13 0 40 42 39 60 0 10 -3 9 -9 -5 -5 -11 -9 -14 -9 -6 -1 9 -9 12 -26 9 -27 -6 -33 10 -13 30 7 7 10 12 7 12 -3 0 -10 -5 -17 -12z"
+       id="path20" />
+    <path
+       d="M637 453 c-13 -12 -7 -23 13 -23 11 0 20 7 20 15 0 15 -21 21 -33 8z"
+       id="path22" />
+    <path
+       d="M1378 395 c-41 -23 -74 -85 -69 -132 2 -22 33 -43 63 -43 34 0 118 44 118 61 0 7 -7 8 -17 4 -64 -27 -102 -38 -116 -32 -23 9 -21 27 3 27 11 0 38 16 60 37 31 27 40 43 38 62 -4 31 -39 38 -80 16z m52 -30 c-19 -23 -70 -58 -76 -52 -10 9 48 67 68 67 17 0 18 -2 8 -15z"
+       id="path24" />
+    <path
+       d="M580 358 c-31 -68 -25 -138 12 -138 24 0 70 23 88 45 20 25 7 26 -36 5 -38 -20 -39 -20 -42 -2 -2 10 6 42 17 69 11 28 17 54 14 57 -16 16 -36 2 -53 -36z"
+       id="path26" />
+    <path
+       d="M350 344 c0 -17 -76 -54 -111 -54 -19 0 -49 9 -68 21 -18 11 -35 19 -37 17 -2 -2 14 -26 34 -53 46 -61 83 -75 120 -48 29 22 79 109 68 120 -3 3 -6 2 -6 -3z"
+       id="path28" />
+    <path
+       d="M1497 244 c-9 -10 2 -24 19 -24 8 0 14 7 14 15 0 15 -21 21 -33 9z"
+       id="path30" />
+    <path
+       d="M1750 236 c0 -10 9 -16 21 -16 24 0 21 23 -4 28 -10 2 -17 -3 -17 -12z"
+       id="path32" />
+  </g>
+</svg>

@@ -1,0 +1,39 @@
+---
+Name: jimev
+---
+SilverStripe\Core\Manifest\ModuleManifest:
+  project: app
+
+SilverStripe\i18n\i18n:
+  default_locale: 'de_DE'
+
+SilverStripe\View\SSViewer:
+  #rewrite_hash_links: false
+  #See Using source_file_comments causes issues with ReadOnly field #6857 on https://github.com/silverstripe/silverstripe-framework/issues/6857
+  #source_file_comments: true
+  themes:
+    - '$public'
+  #  - 'simple'
+    - '$default'
+
+# Email
+Email:
+  admin_email: info@jimev.de
+
+# Limit allowed Link types
+gorriecoe\Link\Models\Link:
+  allowed_types:
+    - URL
+    - SiteTree
+
+#SilverStripe\Admin\LeftAndMain:
+#  extra_requirements_javascript:
+#    - 'colymba/gridfield-bulk-editing-tools:client/dist/js/main.js'
+#    - 'colymba/gridfield-bulk-editing-tools:client/lang/en.js'
+#  extra_requirements_css:
+#    - 'colymba/gridfield-bulk-editing-tools:client/dist/styles/main.css'
+
+# Customize CMS
+SilverStripe\Admin\LeftAndMain:
+  extra_requirements_css:
+  - 'app/client/dist/css/cms.css'

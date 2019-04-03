@@ -1,0 +1,23 @@
+body {
+    margin: 0;     /* This is used to reset any browser-default margins */
+    height: 100vh; /* This is needed to overcome a Chrome bug. */
+}
+div.galleria {
+    height: 100vh;
+}
+div.galleria .galleria-stage {
+    background: #fff;
+}
+.galleria-theme-twelve .galleria-progress {
+    background: #000;
+}
+/* body .galleria-thumbnails {
+    width:80%; margin: auto;
+}*/
+span.total:before {
+    text-transform: lowercase;
+    content: " von ";
+}
+span.total, span.index {
+    color : #7f8c97;;
+}

@@ -1,0 +1,88 @@
+/*
+ * some basic styles
+ */
+
+// don't let images be wider than the parent layer
+iframe,
+img {
+    max-width: 100%;
+}
+
+.a {
+    cursor: pointer;
+}
+
+.a:hover,
+.a:focus,
+a:hover,
+a:focus,
+[data-toggle]:hover,
+[data-toggle]:focus {
+    opacity: .8;
+
+    .fas,
+    .fab,
+    &.fas,
+    &.fab {
+        transform: rotate(-180deg);
+    }
+}
+
+[data-toggle="collapse"] {
+    &[aria-expanded="true"] {
+        .accordion-icon {
+            &:before {
+                content: "\f068";
+            }
+        }
+    }
+}
+
+// transactions
+.transition,
+a, a *,
+.a, .a *,
+button, input, optgroup, select, textarea,
+.btn,
+.alert,
+.dropdown,
+[data-toggle], [data-toggle] *,
+.container,
+.container-fluid,
+.row,
+[class="col-*"] {
+    transition: all 0.4s ease;
+}
+
+.btn-toolbar {
+    margin-top: $grid-gutter-height / 2;
+}
+
+.field {
+    margin: ($grid-gutter-height / 4) 0;
+}
+
+// stick navbar to top using mobile layout
+#Header {
+    position: relative;
+    padding-top: $grid-gutter-height / 2;
+    padding-bottom: 1rem;
+
+    @media (min-width: map-get($grid-breakpoints, "lg")) {
+        padding-top: 1rem;
+        padding-bottom: 0;
+    }
+}
+
+#Navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+
+    @media (min-width: map-get($grid-breakpoints, "lg")) {
+        position: relative;
+        margin-top: 1rem;
+    }
+}

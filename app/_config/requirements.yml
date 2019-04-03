@@ -1,0 +1,28 @@
+# App related
+Site\Templates\DeferedRequirements:
+  nojquery: false
+  nofontawesome: false
+  version: false
+  static_domain: false
+  # Info: assets will be referenced within app/client/dist/js
+  # or app/client/dist/css (will be copied by webpack from thirdparty)
+  custom_requirements:
+    Jimev\Pages\HomePageController:
+      - '/thirdparty/revolution/jquery.themepunch.tools.min.js'
+      - '/thirdparty/revolution/jquery.themepunch.revolution.min.js'
+#   The following classes have been moved to app.scss to be included before customs
+#      - '/thirdparty/revolution/settings.css'
+#      - '/thirdparty/revolution/layers.css'
+#      - '/thirdparty/revolution/navigation.css'
+    Jimev\Pages\ProjectPageController:
+#   The following classes have been moved to app.scss to be included before customs
+#     - '/thirdparty/cubeportfolio/cubeportfolio.min.css'
+      - '/thirdparty/cubeportfolio/jquery.cubeportfolio.min.js'
+    Jimev\Pages\FotosPageController:
+      - '/thirdparty/cubeportfolio/jquery.cubeportfolio.js'
+      - '//cdnjs.cloudflare.com/ajax/libs/galleria/1.5.7/galleria.min.js'
+      - '/thirdparty/galleria/themes/twelve/galleria.twelve.min.js'
+#      - '/thirdparty/galleria/themes/twelve/galleria.twelve.min.css'
+    Jimev\Pages\FaqPageController:
+      - '/thirdparty/cubeportfolio/jquery.cubeportfolio.min.js'
+

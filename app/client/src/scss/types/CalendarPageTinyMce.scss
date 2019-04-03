@@ -1,0 +1,25 @@
+/* ===========
+ * Termine / GoogleCalendarPage
+ * ============= */
+ li.Jongliertreffen {
+    color: #0D7813;
+}
+
+li.Jongliertreffen-faellt-leider-aus {
+    color: #A32929;
+}
+
+li.Jonglier-Events-und-Veranstaltungen {
+    color: #E0C240;
+}
+
+li.Workshops {
+    color: #060D5E;
+}
+
+li.Jongliertreffen,
+li.Jongliertreffen-faellt-leider-aus,
+li.Jonglier-Events-und-Veranstaltungen,
+li.Workshops {
+    font-weight: 500 !important;
+}

@@ -1,0 +1,147 @@
+<?php
+
+namespace Jimev\Pages;
+
+use \Page;
+
+use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\Forms\TabSet;
+use SilverStripe\Forms\Tab;
+//use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\CompositeField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\TextAreaField;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\View\Requirements;
+
+use Jimev\Forms\HTMLEditor\HTMLEditorFieldLocation;
+
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
+
+class LocationPage extends Page
+{
+    private static $singular_name = 'Treffpunkt';
+    private static $description = 'Seite für einen Treffpunkt in den Jongliertreffen';
+    //private static $icon = 'mysite/images/treffen.png';
+    private static $can_be_root = false;
+    private static $allowed_children = 'none';
+
+    private static $db = [
+       'Schedule' => 'HTMLVarchar()',        // Wann
+       'Location' => 'HTMLVarchar()',        // Wo
+       'Contact' => 'HTMLVarchar()',         // Ansprechpartner
+       'Remark' => 'HTMLText()',             // Bemerkung (für die Uebersicht)
+       'LocationDescription' => 'Varchar()', // Beschreibung
+       'Map' => 'Text()'                     // Karte
+    ];
+
+    /*
+     * Important: Please note: It is strongly recommended to define a table_name for all namespaced models.
+     * Not defining a table_name may cause generated table names to be too long
+     * and may not be supported by your current database engine.
+     * The generated naming scheme will also change when upgrading to SilverStripe 5.0 and potentially break.
+     *
+     * Defines the database table name
+     * @var string
+     */
+    private static $table_name = 'LocationPage';
+
+    private static $casting = [
+        'ExistingGoogleMap' => 'HTMLText'
+    ];
+
+    /* Declared within _config.php
+     * ShortcodeParser::get('default')
+     * ->register('existinggooglemap', ['LocationPage','ExistingGoogleMap']);
+    */
+    /* public static function ExistingGoogleMap($arguments, $address = null, $parser = null, $shortcode = null)
+    {
+        $iframeUrl = sprintf(
+            "https://mapsengine.google.com/map/embed?mid=%s",
+            urlencode($address)
+        );
+        $width = (isset($arguments['width']) && $arguments['width']) ? $arguments['width'] : "100%";
+        $height = (isset($arguments['height']) && $arguments['height']) ? $arguments['height'] : "100%";
+        return sprintf(
+            '<iframe class="embedded-maps" width="%s" height="%s" src="%s" frameborder="0"
+            scrolling="no" marginheight="0" marginwidth="0"></iframe>',
+            $width,
+            $height,
+            $iframeUrl
+        );
+    } */
+
+    /* Declared within _config.php
+     * ShortcodeParser::get('default')
+     * ->register('directionsgooglemap', ['LocationPage','DirectionsGoogleMap']);
+    */
+    /* public static function DirectionsGoogleMap($arguments, $address = null, $parser = null, $shortcode = null)
+    {
+        $iframeUrl = sprintf(
+            "https://maps.google.de/maps?%s",
+            urlencode($address)
+        );
+        $width = (isset($arguments['width']) && $arguments['width']) ? $arguments['width'] : "100%";
+        $height = (isset($arguments['height']) && $arguments['height']) ? $arguments['height'] : "100%";
+        return sprintf(
+            '<iframe class="embedded-maps" width="%s" height="%s" src="%s" frameborder="0"
+            scrolling="no" marginheight="0" marginwidth="0"></iframe>',
+            $width,
+            $height,
+            $iframeUrl
+        );
+    } */
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+        $fields->removeFieldFromTab('Root.Main', 'Content');
+
+        //Replace default HtmlEditorField with HtmlEditorFieldLocation
+        $remark = HtmlEditorFieldLocation::create('Remark', 'Bemerkung für die Übersicht')->setRows(5);
+        $intro = HtmlEditorFieldLocation::create('Content', 'Informationen')->setRows(5);
+        $schedule = HtmlEditorFieldLocation::create('Schedule', 'Wann')->setRows(5);
+        $location = HtmlEditorFieldLocation::create('Location', 'Wo')->setRows(5);
+        $contact = HtmlEditorFieldLocation::create('Contact', 'Ansprechpartner')->setRows(5);
+
+        //$tabset = TabSet::create();
+        $tabSet = new TabSet(
+            $name = 'Location',
+            new Tab($title = 'Übersicht', $remark),
+            new Tab($title = 'Informationen', $intro),
+            new Tab($title = 'Wann', $schedule),
+            new Tab($title = 'Wo', $location),
+            new Tab($title = 'Kontakt', $contact)
+        );
+
+        $fields->addFieldsToTab('Root.Main', [$tabSet], 'Metadata');
+        //$fields->addFieldsToTab('Root.Main', [$remark, $intro, $schedule, $location, $contact], 'Metadata');
+
+        // Info
+        $fields->addFieldToTab('Root.Landkarte', new LiteralField(
+            'Info',
+            '<p><span style="color:red;">Achtung: </span>
+            Den Inhalt ür dieses Feld setzt man per HTML-Tag iframe, <br/>
+            z.B. &lt;iframe src="https://mapsengine.google.com/map/embed?mid=zc1l0sHie8lY.kjVxveFjAD0Q"
+                width="100%" height="550" &gt;&lt;/iframe&gt;.
+            <br/>Die Breite (width) immer auf 100% setzen und die Höhe (height) auf 550.<br/>
+            Für neue Karten (src="https://LINK_ZU_GOOGLE") kann man den <a href="https://www.google.de/mapmaker"
+            target="_blank">Mapmaker</a> nutzen.</p>'
+        ));
+        // Description
+        $description = new TextField('LocationDescription', 'Beschreibung');
+        $fields->addFieldToTab('Root.Landkarte', $description);
+        // Map
+        $map = TextAreaField::create('Map', 'Google-IFrame');
+        $fields->addFieldToTab('Root.Landkarte', $map);
+        return $fields;
+    }
+
+    public function getName()
+    {
+        return $this->LocationName;
+    }
+}
