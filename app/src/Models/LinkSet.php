@@ -5,6 +5,12 @@ namespace Jimev\Models;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Security\Permission;
+
+/* See https://github.com/gorriecoe/silverstripe-link */
+use gorriecoe\Link\Models\Link;
+/* See https://github.com/gorriecoe/silverstripe-linkfield */
+use gorriecoe\LinkField\LinkField;
 
 use Jimev\Pages\LinkPage;
 
@@ -18,7 +24,13 @@ class LinkSet extends DataObject
 
     private static $has_one = ['LinkPage' => LinkPage::class];
 
-    private static $many_many = ['Links' => FriendlyLink::class];
+    /**
+     * Migrated
+     * FriendlyLink has been replaced by Link
+     * The table FriendlyLink is obsolete
+     * private static $many_many = ['Links' => FriendlyLink::class];
+     */
+    private static $many_many = ['Links' => Link::class];
 
     /*
      * Important: Please note: It is strongly recommended to define a table_name for all namespaced models.
@@ -38,13 +50,13 @@ class LinkSet extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort = '';
+    private static $default_sort = 'LastEdited DESC';
 
     /**
      * Defines a default list of filters for the search context
      * @var array
      */
-    private static $searchable_fields = [];
+    private static $searchable_fields = ['Title'];
 
     public function fieldLabels($includerelations = true)
     {
@@ -60,24 +72,73 @@ class LinkSet extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('LinkPageID');
         $fields->removeByName('Links');
         $config = GridFieldConfig_RecordEditor::create();
         $gridfield = GridField::create('Links', 'Links', $this->Links(), $config);
         $fields->addFieldToTab('Root.Main', $gridfield);
-
         return $fields;
+    }
+
+    /**
+     * Permission canView
+     * For Gridfield the DataObject class displayed must define a
+     * canView() method that returns a boolean on whether the user can view this record.
+     * @param \SilverStripe\Security\Member|null $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canEdit($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canCreate($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canDelete($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
     }
 }

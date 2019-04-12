@@ -12,6 +12,7 @@ use SilverStripe\Forms\OptionsetField;
 use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Security\Permission;
 
 use Jimev\Pages\HomePage;
 use \Page;
@@ -59,7 +60,7 @@ class HomepageSlider extends DataObject
      * @var array
      */
     private static $has_one = [
-        'Parent' => HomePage::class,  // Relation for homepage
+        'Homepage' => HomePage::class,  // Relation for homepage
         'InternalURL' => Page::class, //Not used any more moved to Link
         'SliderImage' => Image::class,
         'Link' => Link::class
@@ -98,29 +99,14 @@ class HomepageSlider extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
-        // Include link switcher JavaScript
-        //Requirements::javascript('mysite/javascript/JimEvCms.js');
-
-        // First remove the old fields
+        // First remove the scaffolded fields
         $fields->removeByName('Headline');
         $fields->removeByName('LinkText');
         $fields->removeByName('ExternalURL');
         $fields->removeByName('HeadlineColor');
         $fields->removeByName('SortOrder');
         //Has_one
-        $fields->removeByName('ParentID'); // trailing 'ID' as this is a has_one
+        $fields->removeByName('HomepageID'); // trailing 'ID' as this is a has_one
         $fields->removeByName('InternalURLID'); // trailing 'ID' as this is a has_one
         //$fields->removeByName('SliderImageID');  // trailing 'ID' as this is a has_one
         $fields->removeByName('SliderImage');  // has_one without trailing 'ID' !!? (TODO:Clarify)
@@ -213,6 +199,68 @@ class HomepageSlider extends DataObject
             case "Blau":
                 return 'color: #57bfe1 !important;';
                 break;
+        }
+    }
+
+    /**
+     * Permission canView
+     * For Gridfield the DataObject class displayed must define a
+     * canView() method that returns a boolean on whether the user can view this record.
+     * @param \SilverStripe\Security\Member|null $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canEdit($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canCreate($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canDelete($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
         }
     }
 }

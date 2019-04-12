@@ -6,26 +6,23 @@ use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Forms\GridField\GridFieldPrintButton;
 use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
-
-/**
- * Permissions
- * Each new ModelAdmin subclass creates its' own permission code,
- * for the example above this would be CMS_ACCESS_NewsAdmin.
- */
-use SilverStripe\Security\Permission;
-
-use Jimev\Models\Project;
-use Jimev\Models\ProjectTag;
-
+//NEW: Added with 4.3
+use SilverStripe\Forms\GridField\GridFieldLazyLoader;
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
 
+use Jimev\Models\Project;
+use Jimev\Models\ProjectTag;
+
 /**
  * Project administration system within the CMS
- *
- * @package app
- * @subpackage admins
+ * @package Jimev
+ * @subpackage Admins
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
  */
 class ProjectAdmin extends ModelAdmin
 {
@@ -41,33 +38,11 @@ class ProjectAdmin extends ModelAdmin
     ];
 
     public $showImportForm = false;
+
     /**
      * @config
      */
-    private static $items_per_page = '20';
-
-    /**
-     *  Prepare search
-     */
-    public function getSearchContext()
-    {
-        $context = parent::getSearchContext();
-        return $context;
-    }
-
-    /**
-     * Get a result list
-     * The results list are retrieved from SearchContext::getResults(), based on the parameters passed
-     * through the search form. If no search parameters are given, the results will show every record.
-     * Results are a DataList instance, so can
-     * be customized by additional SQL filters, joins.
-     */
-    public function getList()
-    {
-        // Get all including inactive
-        $list = parent::getList();
-        return $list;
-    }
+    private static $items_per_page = 30;
 
     /**
      * Alter look & feel for EditForm
@@ -77,25 +52,36 @@ class ProjectAdmin extends ModelAdmin
      */
     public function getEditForm($id = null, $fields = null)
     {
-
         $form = parent::getEditForm($id, $fields);
-
-        //$gridFieldName = $this->sanitiseClassName($this->modelClass);
-        //$gridField = $form->Fields()->fieldByName($gridFieldName);
         /*
          *  $gridFieldName is generated from the ModelClass, eg if the Class 'Project'
          *  is managed by this ModelAdmin, the GridField for it will also be named 'Project'
          */
-        $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass))->getConfig()
+        // Get gridfield name, should be Jimev-Models-Project
+        $gridFieldName = $this->sanitiseClassName($this->modelClass);
+
+        // Get gridfield
+        $gridField = $form->Fields()->fieldByName($gridFieldName);
+
+        // Get gridfield config
+        $gridFieldConfig = $gridField->getConfig();
+
+        // Set number of items per page
+        $paginator = $gridFieldConfig->getComponentByType('SilverStripe\Forms\GridField\GridFieldPaginator')
+            ->setItemsPerPage($this->config()->get('items_per_page'));
+
+        // NEW: GridFieldLazyLoader added with 4.3
+        $gridFieldConfig->addComponent(new GridFieldLazyLoader());
+
+        // Remove Export and Print-Button
+        $gridFieldConfig
             ->removeComponentsByType(GridFieldExportButton::class)
-            ->removeComponentsByType(GridFieldPrintButton::class)
-            ->getComponentByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')->setRemoveRelation(false);
+            ->removeComponentsByType(GridFieldPrintButton::class);
+
+        // Remove "remove"
+        $gridFieldConfig->getComponentByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')
+            ->setRemoveRelation(false);
 
         return $form;
-    }
-
-    public function init()
-    {
-        parent::init();
     }
 }

@@ -3,13 +3,23 @@
 namespace Jimev\Models;
 
 use SilverStripe\ORM\DataObject;
-
+use SilverStripe\Security\Permission;
 use Jimev\Models\Gallery;
 
+/**
+ * FaqTag DataObject to store Tags for Galleries.
+ *
+ * @package Jimev
+ * @subpackage Model
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
+ */
 class GalleryTag extends DataObject
 {
-    private static $singular_name = 'Tag';
-    private static $plural_name = 'Tags';
+    private static $singular_name = 'Bereich';
+    private static $plural_name = 'Bereiche';
 
     private static $db = [
         'Title' => 'Varchar()'
@@ -18,6 +28,13 @@ class GalleryTag extends DataObject
     private static $belongs_many_many = [
         'Galleries' => Gallery::class
     ];
+
+    public function fieldLabels($includerelations = true)
+    {
+        $labels = parent::fieldLabels($includerelations);
+        $labels['Title'] = 'Name';
+        return $labels;
+    }
 
     /*
      * Important: Please note: It is strongly recommended to define a table_name for all namespaced models.
@@ -35,15 +52,16 @@ class GalleryTag extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort = '';
+    private static $default_sort = 'Title ASC';
 
     /**
      * Defines a default list of filters for the search context
+     * empty equals all
      * @var array
      */
-    private static $searchable_fields = [];
+    private static $searchable_fields = ['Title'];
 
-    private static $summary_fields = [];
+    private static $summary_fields = ['Title'];
 
     public function getTagTitle()
     {
@@ -57,11 +75,74 @@ class GalleryTag extends DataObject
         $fields = parent::getCMSFields();
         return $fields;
     }
+
     /*
      * Used to compare within array_unique() in FotosPage.php
      */
     public function __toString()
     {
         return $this->Title;
+    }
+
+    /**
+     * Permission canView
+     * For Gridfield the DataObject class displayed must define a
+     * canView() method that returns a boolean on whether the user can view this record.
+     * @param \SilverStripe\Security\Member|null $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canEdit($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canCreate($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canDelete($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
     }
 }

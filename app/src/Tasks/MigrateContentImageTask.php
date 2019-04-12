@@ -2,7 +2,7 @@
 
 namespace Jimev\Tasks;
 
-use SilverStripe\AssetAdmin\Helper\ImageThumbnailHelper;
+//use SilverStripe\AssetAdmin\Helper\ImageThumbnailHelper;
 use SilverStripe\ORM\DB;
 use SilverStripe\Assets\FileMigrationHelper;
 use SilverStripe\Dev\BuildTask;
@@ -19,7 +19,7 @@ class MigrateContentImageTask extends BuildTask
 
     private static $segment = 'MigrateContentImageTask';
 
-    protected $title = 'Migrate Sitetree Content with images from 3.x';
+    protected $title = 'Migrate Sitetree Content with images from 3.x (JIM)';
 
     protected $description = 'Run through the sitetree to replace all images referenced within the Content field';
 

@@ -176,13 +176,10 @@ class GalleryImage extends DataObject
         return Permission::check('CMS_ACCESS_LeftAndMain', 'any', $member);
     }
 
-    public function canEdit($Member = null)
+
+    public function canEdit($member = null)
     {
-        if (permission::check('EDIT_GALLERY')) {
-            return true;
-        } else {
-            return false;
-        }
+        return Permission::check('CMS_ACCESS_GalleryAdmin', 'any', $member);
     }
 
     public function canCreate($Member = null, $context = [])

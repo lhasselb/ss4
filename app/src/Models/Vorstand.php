@@ -7,6 +7,7 @@ use SilverStripe\Assets\Image;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\TextField;
 use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Security\Permission;
 
 use Jimev\Pages\ContactAddressPage;
 
@@ -83,30 +84,15 @@ class Vorstand extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
         $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('ContactAddressPageID');
-
         $name = TextField::create('Name', 'Name');
         $role = TextField::create('Role', 'Funktion');
         $mail = TextField::create('Mail', 'E-Mail');
-
         $bildUploadField = new UploadField('Bild', 'Bild');
         $uploadfoldername = substr($this->Link(), 1, -1);
-        //SS_Log::log($uploadfoldername ,SS_Log::WARN);
         $bildUploadField->getValidator()->allowedExtensions = ['jpg', 'gif', 'png'];
         $bildUploadField->setFolderName($uploadfoldername);
-
         $fields->addFieldsToTab('Root.Main', [$name,$role,$mail,$bildUploadField]);
         return $fields;
     }
@@ -115,6 +101,67 @@ class Vorstand extends DataObject
     {
         $page = DataObject::get_by_id(ContactAddressPage::class, $this->ContactAddressPageID);
         return Controller::join_links($page->Link());
-        //return Controller::curr()->Link();
+    }
+
+    /**
+     * Permission canView
+     * For Gridfield the DataObject class displayed must define a
+     * canView() method that returns a boolean on whether the user can view this record.
+     * @param \SilverStripe\Security\Member|null $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canEdit($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canCreate($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canDelete($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
     }
 }

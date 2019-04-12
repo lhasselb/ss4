@@ -4,6 +4,7 @@ namespace Jimev\Models;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
@@ -73,6 +74,8 @@ class Gallery extends DataObject
         'FotosPage' => FotosPage::class
     ];
 
+    private static $default_sort = 'AlbumDate DESC';
+
     /**
      * @config
      * @var array List of has_many or many_many relationships owned by this object.
@@ -90,26 +93,39 @@ class Gallery extends DataObject
      *
      * @var array
      */
-    private static $searchable_fields = ['AlbumName'];
+    private static $searchable_fields = ['AlbumName','AlbumDate'];
 
     private static $summary_fields = [
-        'AlbumName' => 'Name',
-        'AlbumDescription' => 'Beschreibung',
-        'getNiceAlbumDate' => 'Datum',
-        'getTags' => 'Tags',
-        'getImageNumber' => 'Anzahl der Bilder',
-        'ImageFolder' => 'Verzeichnis',
-        'AlbumImage.StripThumbnail' => 'Album-Bild',
+        'AlbumName' => 'AlbumName',
+        'AlbumDescription' => 'AlbumDescription',
+        'AlbumDate' => 'AlbumDate',
+        'Tags' => 'Bereiche',
+        'ImageNumber' => 'Anzahl der Bilder',
+        'ImageFolder' => 'ImageFolder',
+        'AlbumImage.StripThumbnail' => 'AlbumImage.StripThumbnail',
     ];
 
-    private static $default_sort = 'AlbumDate DESC';
+    public function fieldLabels($includerelations = true)
+    {
+        $labels = parent::fieldLabels($includerelations);
+        $labels['AlbumName'] = 'Name';
+        $labels['AlbumDescription'] = 'Beschreibung';
+        $labels['AlbumDate'] = 'Datum';
+        $labels['Tags'] = 'Tags';
+        $labels['ImageNumber'] = 'Anzahl der Bilder';
+        $labels['ImageFolder'] = 'Verzeichnis';
+        $labels['AlbumImage.StripThumbnail'] = 'Album-Bild';
+        return $labels;
+    }
 
-    /**
+    /* Dynamic defaults for object instance
      * Sets the Date field to the current date.
+     * @todo: Check Dates should be stored using ISO 8601 formatted date (y-MM-dd)
      */
     public function populateDefaults()
     {
-        $this->AlbumDate = date('Y-m-d');
+        //$this->AlbumDate = date('Y-m-d');
+        $this->AlbumDate = date('d.m.Y');
         parent::populateDefaults();
     }
 
@@ -122,12 +138,8 @@ class Gallery extends DataObject
         return implode(',', $tags);
     }
 
-    public function getNiceAlbumDate()
+    public function getAlbumDate()
     {
-        /*$date = new DateTime();
-        $date->setValue($this->AlbumDate);
-        return $date->Format('d.m.Y');*/
-
         // Create a DBDate object
         $dbDate = $this->dbObject('AlbumDate');
         // Use strftime to utilize locale
@@ -136,7 +148,8 @@ class Gallery extends DataObject
 
     public function getImageNumber()
     {
-        return $this->GalleryImages()->count();
+        //return $this->GalleryImages()->count();
+        return DBField::create_field('Int', $this->GalleryImages()->count());
     }
 
     public function getAlbumYear()
@@ -186,19 +199,7 @@ class Gallery extends DataObject
 
         //TODO: Add translation
         $fields->fieldByName('Root.Main')->setTitle('Album');
-
         // TODO: Verify HtmlEditorConfig::set_active_identifier('basic');
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         // Remove Scafolded fields
         $fields->removeByName('GalleryImages');
         $fields->removeByName('GalleryTags');
@@ -215,7 +216,7 @@ class Gallery extends DataObject
         $fields->addFieldToTab('Root.Main', $year);
         $tag = TagField::create(
             'GalleryTags',
-            'Album-Tag(s)',
+            'Bereich(e)',
             GalleryTag::get(),
             $this->GalleryTags()
         )
@@ -230,18 +231,20 @@ class Gallery extends DataObject
             $fields->addFieldToTab('Root.Main', $albumImage);
 
             $gridFieldConfig = GridFieldConfig_RecordEditor::create();
-            // Add GridFieldBulkManager
-            $gridFieldConfig->addComponent(new \Colymba\BulkManager\BulkManager());
-            // Remove bulk actions
-            $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
-                ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\UnlinkHandler');
-            $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
-                ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\EditHandler');
+
             // Remove bulk delete action from non Administrators
-            if (!$this->canDelete()) {
+            if (Permission::check('ADMIN') || $this->canDelete()) {
+                // Add GridFieldBulkManager
+                $gridFieldConfig->addComponent(new \Colymba\BulkManager\BulkManager());
+                // Remove bulk actions
+                $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
+                    ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\UnlinkHandler');
+                $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
+                    ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\EditHandler');
                 $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
                     ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\DeleteHandler');
             }
+
             // Add BulkUploader
             $gridFieldConfig->addComponent(new \Colymba\BulkUpload\BulkUploader());
             // Used to determine upload folder
@@ -259,16 +262,6 @@ class Gallery extends DataObject
             $fields->addFieldToTab('Root.Fotos', $gridfield);
         }
         return $fields;
-    }
-
-    public function fieldLabels($includerelations = true)
-    {
-        $labels = parent::fieldLabels($includerelations);
-        $labels['AlbumName'] = 'Name';
-        $labels['AlbumDescription'] = 'Beschreibung';
-        $labels['ImageFolder'] = 'Verzeichnisname';
-        $labels['AlbumImage'] = 'Album-Bild';
-        return $labels;
     }
 
     /**
@@ -339,36 +332,6 @@ class Gallery extends DataObject
             $albumName = strtolower(preg_replace('/-+/', '-', $albumName));
             $this->ImageFolder = $base.'/'.$albumName;
         }
-
-        /**
-         * MOVED TO TASK
-         * Added for migration frm 3. to 4. , required after cleanup of data (images)
-         * We need to add some self healing for the Gallery has_many GalleryImage relation
-         */
-        //Injector::inst()->get(LoggerInterface::class)->debug('Gallery - ImageFolder  = ' . $this->ImageFolder);
-        // The stored folder contains both the base and folder name like fotoalben/artcon
-        /*
-        $albumPathName = $this->ImageFolder;
-        if (strstr($albumPathName, '/')) {
-            $folderName = substr($albumPathName, strrpos($albumPathName, '/') + 1);
-        }
-        $folder = Folder::get()->filter('Name', $folderName)->first();
-        $total = $this->GalleryImages()->count();
-        //Injector::inst()->get(LoggerInterface::class)->debug('Gallery - Single Folder  = ' . $folder->Name);
-        // Do we have children
-        if ($folder->hasChildren() && $total == 0) {
-            // Yes - Iterate over all children
-            foreach ($folder->myChildren() as $image) {
-                // Is this an image
-                if ($image->getIsImage()) {
-                    // Add ID to GalleryImages
-                    //Injector::inst()->get(LoggerInterface::class)->debug('Gallery - image ID  = ' . $image->ID);
-                    $gImage = GalleryImage::create();
-                    $gImage->Image = $image;
-                    $this->GalleryImages()->add($gImage->write());
-                }
-            }
-        }*/
     }
 
     /**
@@ -379,20 +342,14 @@ class Gallery extends DataObject
     public function Link()
     {
         $fotoPage = DataObject::get_one(FotosPage::class);
-        //Injector::inst()
-        //    ->get(LoggerInterface::class)
-        //    ->debug('Gallery - Link() page  = ' . $fotoPage . ' ' .
-        //    Controller::join_links($fotoPage->Link(), 'album', $this->ID));
-
         return Controller::join_links($fotoPage->Link(), 'album', $this->ID);
     }
 
-    // All Permission use autogenerated Admin based permissions "CMS_ACCESS_GalleryAdmin"
-
     /**
+     * All Permission use autogenerated Admin based permissions CMS_ACCESS_GalleryAdmin
      * Permission canView
      *
-     * @param [type] $member
+     * @param \SilverStripe\Security\Member|null $member
      * @return boolean
      */
     public function canView($member = null)
@@ -405,10 +362,9 @@ class Gallery extends DataObject
         return Permission::check('CMS_ACCESS_GalleryAdmin', 'any', $member);
     }
 
-    // Admins only
     public function canDelete($member = null)
     {
-        return Permission::check('CMS_ACCESS_LeftAndMain', 'any', $member); //CMS_ACCESS_CourseAdmin
+        return Permission::check('CMS_ACCESS_CourseAdmin', 'any', $member);
     }
 
     public function canCreate($member = null, $context = [])

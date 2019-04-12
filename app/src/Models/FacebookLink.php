@@ -15,6 +15,7 @@ use gorriecoe\Link\Models\Link;
 /* See https://github.com/gorriecoe/silverstripe-linkfield */
 use gorriecoe\LinkField\LinkField;
 
+//TODO: DELETE this class and the table in the database after migtation
 class FacebookLink extends DataObject
 {
     private static $singular_name = 'Facebookgruppen-Link';
@@ -62,7 +63,6 @@ class FacebookLink extends DataObject
     {
         $labels = parent::fieldLabels($includerelations);
         $labels['FacebookLink'] = 'Link';
-        //$labels['Description'] = 'Beschreibung';
         return $labels;
     }
 
@@ -72,21 +72,7 @@ class FacebookLink extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('KontaktPageID');
-        //$fields->addFieldToTab('Root.Main', LinkField::create('FacebookLinkID', 'Facebook-Gruppe'));
-        // NEW
         $fields->removeByName('FacebookLinkID');
         $fields->addFieldToTab('Root.Main', LinkField::create('FacebookLink', 'Facebook-Gruppe', $this));
         return $fields;

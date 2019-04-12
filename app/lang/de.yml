@@ -32,3 +32,24 @@ de:
     PLURALNAME: Karten
     SHOWONSTARTUP: 'Zeige beim Öffnen der Seite'
     SINGULARNAME: Karte
+
+# TODO: Add translation to
+  gorriecoe\Link\Models\Link:
+    EMAILADDRESS: 'Email Adresse'
+    FILE: Datei
+    LINKTYPE: Typ
+    OPENINNEWWINDOW: 'In einem neuen Fenster öffnen'
+    OPTIONALTITLE: 'Optional. Wird vom Link übernommen (wenn leer).'
+    PHONENUMBER: 'Telefonnummer'
+    PLURALNAME: Links
+    PLURALS:
+      one: 'Ein Link'
+      other: '{count} Links'
+    SINGULARNAME: Link
+    STYLE: Stil
+    TITLE: Titel
+    URL: URL
+    VALIDATIONERROR_OBJECT: 'Bitte wählen Sie einen {LinkType}'
+    VALIDATIONERROR_VALIDEMAIL: 'Bitte eine valide Email-Adresse angeben.'
+    VALIDATIONERROR_VALIDPHONE: 'Bitte eine valide Telefonnnumber angeben.'
+    VALIDATIONERROR_VALIDURL: 'Bitte eine valide URL angeben.  Bei externen URLs "http://" ergänzen oder bei einer internen URL mit Anker (#) mit "/" beginnen.'

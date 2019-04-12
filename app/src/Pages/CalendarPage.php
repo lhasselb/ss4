@@ -3,20 +3,28 @@
 namespace Jimev\Pages;
 
 use \Page;
-
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\View\Requirements;
-
-use Jimev\Models\GoogleCalendar;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
 
+use Jimev\Models\GoogleCalendar;
+
+/**
+ * CalendarPage
+ *
+ * @package Jimev
+ * @subpackage Pages
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
+ */
 class CalendarPage extends Page
 {
     /*
@@ -47,7 +55,7 @@ class CalendarPage extends Page
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        // Customise the TinyMCE
+        // Customise TinyMCE
         TinyMCEConfig::get('cms')->setContentCSS([ '/app/client/dist/css/CalendarPageTinyMCE.css' ]);
         TinyMCEConfig::get('cms')->setButtonsForLine(1, 'bullist', 'sslink', 'unlink', 'code');
         TinyMCEConfig::get('cms')->addButtonsToLine(1, 'styleselect')
@@ -63,16 +71,20 @@ class CalendarPage extends Page
 
         $fields->fieldByName('Root.Main.Content')->setTitle('Legende');
 
-        // googleCalendarApiKey
+        /**
+         * Not yet used googleCalendarApiKey !
+         * The API key is required to fetch some additional information from Google
+         * e.g. the used colors of the different calendars
+         */
+        // GOOGLE CALENDAR
+        /*
         $googleApiKey = new TextField('GoogleCalendarApiKey', 'Google Kalender API Key');
         $fields->addFieldToTab('Root.Google Kalender', $googleApiKey);
-
-        // GOOGLE CALENDAR
         $calendarConfig = GridFieldConfig_RecordEditor::create();
         $calendarGridField = new GridField('Calendar', 'Google Kalendar', $this->Calendar());
         $calendarGridField->setConfig($calendarConfig);
         $fields->addFieldToTab('Root.Google Kalender', $calendarGridField);
-
+        */
         return $fields;
     }
 }

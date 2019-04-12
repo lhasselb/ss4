@@ -33,7 +33,7 @@ class AddGalleryImagesTask extends BuildTask
     /**
      * @var string
      */
-    protected $title = 'Add Gallery Images Task';
+    protected $title = 'Add Gallery Images Task (JIM)';
 
     /**
      * @var string

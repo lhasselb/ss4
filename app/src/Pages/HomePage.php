@@ -32,7 +32,7 @@ class HomePage extends Page
     private static $allowed_children = 'none';
 
     private static $has_many = [
-        'Sliders' => HomepageSlider::class . '.Parent',
+        'Sliders' => HomepageSlider::class . '.Homepage', //.Parent
         'Alarm' => Alarm::class . '.Homepage',
         'News' => News::class
     ];
@@ -57,6 +57,8 @@ class HomePage extends Page
         //->debug('HomePage - getCMSFields() content = ' . $content->debug());
 
         // SLIDER
+        // The DataObject class displayed must define a
+        // canView() method that returns a boolean on whether the user can view this record.
         $sliderConfig = GridFieldConfig_RecordEditor::create();
         $sliderConfig->addComponent(new GridFieldSortableRows('SortOrder'));
         $sliderGridField = new GridField('SLider', 'Bild(er) auf der Startseite', $this->Sliders());

@@ -8,7 +8,11 @@ use SilverStripe\View\Requirements;
 use SilverStripe\ORM\PaginatedList;
 use Jimev\Models\News;
 
-use Site\Templates\DeferedRequirements;
+//use Site\Templates\DeferedRequirements;
+
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
 
 class HomePageController extends PageController
 {
@@ -33,7 +37,7 @@ class HomePageController extends PageController
     protected function init()
     {
         parent::init();
-        //Requireents moved to app/client/src/js/Jimev.Pages.HomePageController.js using webpack
+        //Requirements moved to app/client/src/js/Jimev.Pages.HomePageController.js using webpack
     }
 
     /**
@@ -45,16 +49,18 @@ class HomePageController extends PageController
         $today = date('Y-m-d');
         $start = isset($_GET['start']) ? (int) $_GET['start'] : 0;
         $list = News::get()
-        ->filterAny([
-            //'ClassName' => 'News',
-            'HomepageSectionID:GreaterThan' => '0'
-        ])
-        ->filter('ExpireDate:GreaterThan', $today);
-        //->exclude('ExpireDate:LessThan',$today);
-        //->sort('NewsDate','DESC');
+            // Get all with a valid HomepageSectionID
+            ->filterAny(['HomepageSectionID:GreaterThan' => '0'])
+            // Exclude the expited ones
+            ->filter('ExpireDate:GreaterThan', $today);
+
+        /*
         foreach ($list as $news) {
-            //SS_Log::log('ExpireDate'.$news->ExpireDate,SS_Log::WARN);
+            Injector::inst()
+            ->get(LoggerInterface::class)
+            ->debug('HomePageController - PaginatedLatestNews() news = ' . $news->Title . ' link=' . $news->Link());
         }
+        */
 
         return new PaginatedList($list, $this->getRequest());
     }

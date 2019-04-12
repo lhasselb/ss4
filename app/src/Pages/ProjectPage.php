@@ -5,7 +5,12 @@ namespace Jimev\Pages;
 use \Page;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ArrayList;
+
 use Jimev\Models\Project;
+
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
 
 class ProjectPage extends Page
 {
@@ -63,6 +68,14 @@ class ProjectPage extends Page
         return new ArrayList(array_unique($usedtags));
     }
 
+    /**
+     * Get the used Years from Project->ProjectDate (remove duplicates)
+     * Comparing objects requires a __toString() method
+     * Only used ones $this->Projects() not all Projects::get()
+     * @see Projects::class->_toString()
+     *
+     * @return ArrayList sorted by Date
+     */
     public function getProjectPageYears()
     {
 
@@ -72,9 +85,8 @@ class ProjectPage extends Page
         }
 
         // Limit to used ones
-        // this requires a __toString() method for the object compared
-        // see Project __toString()
+        // Careful Project::class->_toString() returns years only!
         $list = new ArrayList(array_unique($usedYears));
-        return $list->sort('ProjectDate', 'DESC');
+        return $list;
     }
 }

@@ -49,7 +49,8 @@ namespace {
         public function getFacebookLinks()
         {
             if (KontaktPage::get()->first()) {
-                return KontaktPage::get()->First()->FacebookLinks();
+                //return KontaktPage::get()->First()->FacebookLinks();
+                return KontaktPage::get()->First()->Links();
             }
         }
     }

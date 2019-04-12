@@ -17,7 +17,7 @@ SilverStripe\Core\Injector\Injector:
      Quality: 90
 # ----------------------------------
 # ----------------------------------
-# Switch Image library for migration (disable again !)
+# TODO: Switch Image library for migration (disable again !)
 # ----------------------------------
 SilverStripe\Core\Injector\Injector:
   Intervention\Image\ImageManager:
@@ -66,10 +66,3 @@ Axllent\ScaledUploads\ScaledUploads:
 #      max_height: 400
 # ----------------------------------
 # ----------------------------------
-# GalleryImageExtension added for gallery to create a thumbnail and a stage image
-SilverStripe\Assets\Image:
-  extensions:
-    - Jimev\Extensions\GalleryImageExtension
-SilverStripe\Assets\Storage\DBFile:
-  extensions:
-    - Jimev\Extensions\GalleryImageExtension

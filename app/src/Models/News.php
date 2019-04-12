@@ -14,9 +14,13 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\ORM\FieldType\DBField;
 
 // See https://github.com/stevie-mayhew/hasoneedit/blob/master/src/HasOneEdit.php
 use SGN\HasOneEdit\HasOneEdit;
+
+//Add global namespace
+use \DateTime;
 
 use Jimev\Pages\SectionPage;
 
@@ -31,7 +35,7 @@ use Psr\Log\LoggerInterface;
  * @subpackage Model
  * @author Lars Hasselbach <lars.hasselbach@gmail.com>
  * @since 15.03.2016
- * @copyright 2019 [sybeha]
+ * @copyright 2016 [sybeha]
  * @license see license file in modules root directory
  */
 class News extends DataObject
@@ -86,10 +90,7 @@ class News extends DataObject
 
     private static $casting =
     [
-        'TitleWithDate' => 'Varchar',
-        'NewsSection' =>  'Varchar',
-        'NiceNewsDate' => 'Varchar',
-        'NiceExpireDate' => 'Varchar',
+        'TitleWithDate' => 'Varchar'
     ];
 
     /**
@@ -100,17 +101,18 @@ class News extends DataObject
      */
     private static $summary_fields = [
         'NewsTitle' => 'Schlagzeile',
-        'NewsSection' => 'Bereich',
-        'NiceNewsDate' => 'Anzeige-Datum',
-        'NiceExpireDate' => 'Ablauf-Datum',
-        'OnHomepage' => 'Wird auf der Startseite angezeigt?',
-        'NewsImage.StripThumbnail' => 'Miniaturbild',
+        'HomepageSection.Title'=>'HomepageSection.Title',
+        'NewsDate' => 'NewsDate',
+        'ExpireDate' => 'ExpireDate',
+        'OnHomepage' => 'OnHomepage',
+        'NewsImage.StripThumbnail' => 'NewsImage.StripThumbnail',
     ];
 
     public function fieldLabels($includerelations = true)
     {
         $labels = parent::fieldLabels($includerelations);
         $labels['Title'] = 'Schlagzeile';
+        $labels['OnHomepage'] = 'Startseite?';
         $labels['NewsTitle'] = 'Schlagzeile';
         $labels['NewsSection'] = 'Bereich';
         $labels['HomepageSection.Title'] = 'Bereich';
@@ -118,6 +120,7 @@ class News extends DataObject
         $labels['NewsDate'] = 'Anzeige-Datum';
         $labels['ExpireDate'] = 'Ablauf-Datum';
         $labels['NewsImage'] = 'News-Bild';
+        $labels['NewsImage.StripThumbnail'] = 'Miniaturbild';
         return $labels;
     }
 
@@ -126,7 +129,7 @@ class News extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort='ExpireDate DESC, NewsDate DESC'; //NewsDate
+    private static $default_sort='NewsDate DESC'; //$default_sort='NewsDate DESC, ExpireDate DESC'
 
     /**
      * Defines a default list of filters for the search context
@@ -134,12 +137,16 @@ class News extends DataObject
      */
     private static $searchable_fields = ['NewsTitle', 'HomepageSection.Title', 'NewsDate', 'ExpireDate'];
 
-    /**
+    /* Dynamic defaults for object instance
      * Sets the Date field to the current date.
+     * @todo: Check Dates should be stored using ISO 8601 formatted date (y-MM-dd)
      */
     public function populateDefaults()
     {
-        $this->NewsDate = date('Y-m-d');
+        // This seems to work for both formats
+        //$this->NewsDate = date('Y-m-d');
+        $this->NewsDate = date('d.m.Y');
+        $this->NewsTitle = 'Schlagzeile - Bitte ändern!';
         parent::populateDefaults();
     }
 
@@ -186,7 +193,7 @@ class News extends DataObject
      */
     public function getTitleWithDate()
     {
-        return $this->Title . ' (' . $this->getNiceExpireDate() . ')';
+        return $this->Title . ' (' . $this->getExpireDate() . ')';
     }
 
     /**
@@ -194,7 +201,7 @@ class News extends DataObject
      *
      * @return string (formatted)
      */
-    public function getNiceNewsDate()
+    public function getNewsDate()
     {
         // Create a DBDate object
         $dbDate = $this->dbObject('NewsDate');
@@ -207,31 +214,41 @@ class News extends DataObject
      *
      * @return string (formatted)
      */
-    public function getNiceExpireDate()
+    public function getExpireDate()
     {
         // Create a DBDate object
         $dbDate = $this->dbObject('ExpireDate');
+
+        // Check if set, null will deliver an empty string
+        if ($this->dbObject('ExpireDate')=="") {
+            return '';
+        }
         // Use strftime to utilize locale
         return strftime('%d.%m.%Y', $dbDate->getTimestamp());
     }
 
     /**
-     * / Used for $summary_fields
-     *
+     * Used for $summary_fields
+     * Be sure to compare dates !
      * @return string
      */
     public function getOnHomepage()
     {
-        $today = date("Y-m-d");
-        $state = 'Nein';
-        if (!$this->ExpireDate) {
-            $state .= '-Ablaufdatum fehlt';
-        } elseif ($this->ExpireDate < $today) {
-            $state .= '-Abgelaufen';
-        } else {
-            $state = "Ja";
+        // Create a date object
+        $today = new DateTime();
+
+        // Create another date to compare both dates
+        $expireDate = new DateTime($this->dbObject('ExpireDate'));
+
+        if ($this->dbObject('ExpireDate')=="") {
+            return 'Nein-Ablaufdatum fehlt';
         }
-        return $state;
+
+        if ($expireDate > $today) {
+            return 'Ja';
+        } else {
+            return 'Nein-Abgelaufen';
+        }
     }
 
     /**
@@ -269,18 +286,6 @@ class News extends DataObject
 
         //TODO: Add translation
         $fields->fieldByName('Root.Main')->setTitle('Newsdetails');
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         // News might have a section or "News" will be added see @method mixed getNewsSection()
         // Hide this here and move it down to another position
         $fields->removeByName('HomepageSectionID');
@@ -314,8 +319,9 @@ class News extends DataObject
         $fields->addFieldToTab('Root.Main', $newsDate);
 
         $expireDate = DateField::create('ExpireDate', $this->fieldLabel('ExpireDate'));
-        if (empty($this->getNiceExpireDate())) {
-            $title->setDescription('<strong>Bitte Datum setzen.</strong>');
+
+        if ($this->ExpireDate == "01.01.1970") {
+            $expireDate->setDescription('<strong>Bitte ein gültiges Ablauf-Datum setzen.</strong>');
         }
         $fields->addFieldToTab('Root.Main', $expireDate);
 
@@ -353,15 +359,16 @@ class News extends DataObject
     public function Link()
     {
         $belongsToCourseID = $this->Course()->ID;
+        //Injector::inst()->get(LoggerInterface::class)->debug('News - Link() called. Related to course with ID ' . $belongsToCourseID);
         $link = null;
         if ($belongsToCourseID) {
-            Injector::inst()->get(LoggerInterface::class)->debug('News - Link() called. Related to course with ID ' . $belongsToCourseID);
+            //Injector::inst()->get(LoggerInterface::class)->debug('News - Link() called. Related to course with ID ' . $belongsToCourseID);
         }
 
         if ($belongsToCourseID > 0) {
             $course = Course::get_by_id($belongsToCourseID);
             $link = $course->Link();
-            //njector::inst()->get(LoggerInterface::class)->debug('News - Link() for Course = ' . $link);
+            //Injector::inst()->get(LoggerInterface::class)->debug('News - Link() for Course = ' . $link);
         }
         return $link;
     }
@@ -409,12 +416,11 @@ class News extends DataObject
         return $result;
     }
 
-    // All Permission use autogenerated Admin based permissions "CMS_ACCESS_NewsAdmin"
-
     /**
+     * All Permission use autogenerated Admin based permissions CMS_ACCESS_NewsAdmin
      * Permission canView
      *
-     * @param [type] $member
+     * @param \SilverStripe\Security\Member|null $member
      * @return boolean
      */
     public function canView($member = null)
@@ -422,17 +428,29 @@ class News extends DataObject
         return Permission::check('CMS_ACCESS_NewsAdmin', 'any', $member);
     }
 
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @return bool
+     */
     public function canEdit($member = null)
     {
         return Permission::check('CMS_ACCESS_NewsAdmin', 'any', $member);
     }
 
-    // Admins only
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @return bool
+     */
     public function canDelete($member = null)
     {
-        return Permission::check('CMS_ACCESS_LeftAndMain', 'any', $member); //CMS_ACCESS_NewsAdmin
+        return Permission::check('CMS_ACCESS_NewsAdmin', 'any', $member);
     }
 
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
     public function canCreate($member = null, $context = [])
     {
         return Permission::check('CMS_ACCESS_NewsAdmin', 'any', $member);

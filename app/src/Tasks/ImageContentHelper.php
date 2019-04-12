@@ -63,15 +63,17 @@ class ImageContentHelper
             preg_match_all('/src="([^"]*)"/i', $content, $matches);
             if (array_pop($matches)) {
                 foreach ($matches as $match) {
-                    Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent()  page = ' . $title);
+                    //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent()  page = ' . $title);
                     foreach ($match as $imageUrl) {
+                        //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent() imageUrl = ' . $imageUrl);
                         // Get the file name
                         $imagename = strrchr($imageUrl, '/');
+                        //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent() imagename = ' . $imagename);
                         $filename = substr($imagename, 1, strlen($imagename)-2);
-                        //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent() old = ' . $oldImageUrl);
+                        //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent() filename = ' . $filename);
                         $file = File::get()->filter('Name', $filename)->first();
                         if ($file) {
-                            //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent() new = ' . $newImageUrl);
+                            //Injector::inst()->get(LoggerInterface::class)->debug('ImageContentHelper - migrateContent() replace for  ' . $file->Name);
                             if ($this->replacePageImageWithFile($page, $imageUrl, $file)) {
                                 return true;
                             }

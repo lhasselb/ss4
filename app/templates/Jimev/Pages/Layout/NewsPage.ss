@@ -15,7 +15,7 @@
                                 <% loop PaginatedLatestNews %><div class="c-content-blog-post-1">
                                     <% if NewsImage %><div class="c-media">
                                         <div class="c-content-media-2-slider" data-slider="owl" data-single-item="true" data-auto-play="4000">
-                                            <div class="owl-carousel owl-theme c-theme owl-single">
+                                            <div class="c-theme">
                                                 <div class="item">
                                                     <div class="c-content-media-2" style="background-image: url($NewsImage.FocusFill(758,230).URL); min-height: 230px;"> </div>
                                                 </div>

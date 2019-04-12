@@ -1,2 +1,4 @@
-
-
+# Added to store an additional description with a Link
+gorriecoe\Link\Models\Link:
+  extensions:
+    - Jimev\Extensions\LinkExtension

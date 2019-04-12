@@ -42,31 +42,18 @@ class GoogleCalendar extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort = '';
+    private static $default_sort = 'Title ASC';
 
     /**
      * Defines a default list of filters for the search context
      * @var array
      */
-    private static $searchable_fields = [];
+    private static $searchable_fields = ['Title'];
 
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('CalendarpageID');
-
         return $fields;
     }
 }

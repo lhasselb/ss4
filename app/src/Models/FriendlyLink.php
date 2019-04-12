@@ -13,6 +13,7 @@ use gorriecoe\Link\Models\Link;
 /* See https://github.com/gorriecoe/silverstripe-linkfield */
 use gorriecoe\LinkField\LinkField;
 
+//TODO: DELETE this class and the table in the database after migtation
 class FriendlyLink extends DataObject
 {
     private static $singular_name = 'Link';
@@ -51,7 +52,7 @@ class FriendlyLink extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort = ''; // e.g. 'Description DESC' or 'Created ASC' or 'LastEdited DESC'
+    private static $default_sort = 'LastEdited DESC'; // e.g. 'Description DESC' or 'Created ASC' or 'LastEdited DESC'
 
     /**
      * Defines a default list of filters for the search context
@@ -77,21 +78,6 @@ class FriendlyLink extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
-        //$fields->addFieldToTab('Root.Main', LinkField::create('FriendlyLinkID', 'Link'));
-
-        // NEW
         $fields->removeByName(['FriendlyLinkID']);
         $fields->addFieldToTab('Root.Main', LinkField::create('FriendlyLink', 'Link', $this));
 

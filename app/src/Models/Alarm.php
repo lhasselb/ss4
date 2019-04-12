@@ -7,6 +7,7 @@ use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Permission;
 
 use Jimev\Pages\HomePage;
 
@@ -24,7 +25,7 @@ use Psr\Log\LoggerInterface;
  * @subpackage Model
  * @author Lars Hasselbach <lars.hasselbach@gmail.com>
  * @since 15.03.2016
- * @copyright 2019 [sybeha]
+ * @copyright 2016 [sybeha]
  * @license see license file in modules root directory
  */
 class Alarm extends DataObject
@@ -236,17 +237,6 @@ class Alarm extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('HomepageID');
 
         //HtmlEditorConfig::set_active_identifier('basic');
@@ -297,5 +287,66 @@ class Alarm extends DataObject
             );
         }
         return $result;
+    }
+
+    /**
+     * Permission canView
+     * For Gridfield the DataObject class displayed must define a
+     * canView() method that returns a boolean on whether the user can view this record.
+     * @param \SilverStripe\Security\Member|null $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canEdit($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @return bool
+     */
+    public function canDelete($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param \SilverStripe\Security\Member|null $member
+     * @param array $context
+     * @return bool
+     */
+    public function canCreate($member = null, $context = [])
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
     }
 }

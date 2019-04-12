@@ -3,7 +3,6 @@
 namespace Jimev\Pages;
 
 use \Page;
-
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\CheckboxSetField;
 use SilverStripe\ORM\ArrayList;
@@ -22,19 +21,11 @@ class FotosPage extends Page
     private static $can_be_root = true;
     private static $allowed_children = 'none';
 
-    private static $db = [
-       'Title' => 'Varchar(255)',
-    ];
-
     private static $many_many = [
         'Galleries' => Gallery::class
     ];
 
-    /*public function Galleries() {
-        return Gallery::get();
-    }*/
-
-        /*
+    /*
      * Important: Please note: It is strongly recommended to define a table_name for all namespaced models.
      * Not defining a table_name may cause generated table names to be too long
      * and may not be supported by your current database engine.
@@ -88,7 +79,10 @@ class FotosPage extends Page
         foreach ($this->Galleries() as $gallery) {
             array_push($usedYears, $gallery);
         }
+
+        // Limit to used ones
+        // Careful Gallery::class->_toString() returns years only!
         $list = new ArrayList(array_unique($usedYears));
-        return $list->sort('AlbumDate', 'DESC');
+        return $list;
     }
 }

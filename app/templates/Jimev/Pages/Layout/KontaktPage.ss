@@ -15,8 +15,8 @@
                         </div>
                         <div class="col-md-3">
                             <div class="facebook">
-                                <% loop FacebookLinks %>
-                                <a href="$FacebookLink.URL" class="btn btn-block btn-social c-btn-square c-btn-uppercase btn-md btn-facebook"><i class="fab fa-facebook-f"></i> $FacebookLink.Title
+                                <% loop Links %>
+                                <a href="$Me.URL" class="btn btn-block btn-social c-btn-square c-btn-uppercase btn-md btn-facebook"><i class="fab fa-facebook-f"></i> $Me.Title
                                 </a>
                                 <% end_loop %>
                             </div>

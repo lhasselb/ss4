@@ -3,7 +3,6 @@
 namespace Jimev\Pages;
 
 use \Page;
-
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TabSet;
@@ -14,13 +13,22 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\TextAreaField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\View\Requirements;
-
-use Jimev\Forms\HTMLEditor\HTMLEditorFieldLocation;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
 
+use Jimev\Forms\HTMLEditor\HTMLEditorFieldLocation;
+
+/**
+ * LocationPage
+ *
+ * @package Jimev
+ * @subpackage Pages
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
+ */
 class LocationPage extends Page
 {
     private static $singular_name = 'Treffpunkt';
@@ -52,48 +60,6 @@ class LocationPage extends Page
     private static $casting = [
         'ExistingGoogleMap' => 'HTMLText'
     ];
-
-    /* Declared within _config.php
-     * ShortcodeParser::get('default')
-     * ->register('existinggooglemap', ['LocationPage','ExistingGoogleMap']);
-    */
-    /* public static function ExistingGoogleMap($arguments, $address = null, $parser = null, $shortcode = null)
-    {
-        $iframeUrl = sprintf(
-            "https://mapsengine.google.com/map/embed?mid=%s",
-            urlencode($address)
-        );
-        $width = (isset($arguments['width']) && $arguments['width']) ? $arguments['width'] : "100%";
-        $height = (isset($arguments['height']) && $arguments['height']) ? $arguments['height'] : "100%";
-        return sprintf(
-            '<iframe class="embedded-maps" width="%s" height="%s" src="%s" frameborder="0"
-            scrolling="no" marginheight="0" marginwidth="0"></iframe>',
-            $width,
-            $height,
-            $iframeUrl
-        );
-    } */
-
-    /* Declared within _config.php
-     * ShortcodeParser::get('default')
-     * ->register('directionsgooglemap', ['LocationPage','DirectionsGoogleMap']);
-    */
-    /* public static function DirectionsGoogleMap($arguments, $address = null, $parser = null, $shortcode = null)
-    {
-        $iframeUrl = sprintf(
-            "https://maps.google.de/maps?%s",
-            urlencode($address)
-        );
-        $width = (isset($arguments['width']) && $arguments['width']) ? $arguments['width'] : "100%";
-        $height = (isset($arguments['height']) && $arguments['height']) ? $arguments['height'] : "100%";
-        return sprintf(
-            '<iframe class="embedded-maps" width="%s" height="%s" src="%s" frameborder="0"
-            scrolling="no" marginheight="0" marginwidth="0"></iframe>',
-            $width,
-            $height,
-            $iframeUrl
-        );
-    } */
 
     public function getCMSFields()
     {

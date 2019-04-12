@@ -6,32 +6,24 @@ use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Forms\GridField\GridFieldPrintButton;
 use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
-use SilverStripe\Forms\GridField\GridFieldFilterHeader;
 //NEW: Added with 4.3
 use SilverStripe\Forms\GridField\GridFieldLazyLoader;
-
-use Jimev\Models\News;
-
 // See https://github.com/jinjie/duplicate-dataobject
 use SwiftDevLabs\DuplicateDataObject\Forms\GridField\GridFieldDuplicateAction;
-
-/**
- * Permissions
- * Each new ModelAdmin subclass creates its' own permission code,
- * for the example above this would be CMS_ACCESS_NewsAdmin.
- */
-use SilverStripe\Security\Permission;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
 
+use Jimev\Models\News;
+
 /**
- * New administration system within the CMS
- *
- * News are sorted by date
- * @package app
- * @subpackage admins
+ * News administration system within the CMS
+ * @package Jimev
+ * @subpackage Admins
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
  */
 class NewsAdmin extends ModelAdmin
 {
@@ -47,30 +39,7 @@ class NewsAdmin extends ModelAdmin
     /**
      * @config
      */
-    private static $items_per_page = '20';
-
-    /**
-     *  Prepare search
-     */
-    public function getSearchContext()
-    {
-        $context = parent::getSearchContext();
-        return $context;
-    }
-
-    /**
-     * Get a result list
-     * The results list are retrieved from SearchContext::getResults(), based on the parameters passed through
-     * the search form. If no search parameters are given, the results will show every record.
-     * Results are a DataList instance, so can
-     * be customized by additional SQL filters, joins.
-     */
-    public function getList()
-    {
-        // Get all including inactive
-        $list = parent::getList();
-        return $list;
-    }
+    private static $items_per_page = 30;
 
     /**
      * Alter look & feel for EditForm
@@ -80,47 +49,39 @@ class NewsAdmin extends ModelAdmin
      */
     public function getEditForm($id = null, $fields = null)
     {
-
         $form = parent::getEditForm($id, $fields);
-
-        // Only required to distinguish between classes
-        /*
-        foreach ($form->Fields() as $field) {
-            Injector::inst()->get(LoggerInterface::class)
-                ->debug('NewsAdmin - getEditForm() field = ' . get_class($field) );
-            if ($field instanceof SilverStripe\Forms\GridField\GridField ) {
-                foreach ($field->getComponents() as $c_name) {
-                    Injector::inst()->get(LoggerInterface::class)
-                        ->debug(get_class(&this) . ' - getEditForm() component = ' . get_class ($c_name) );
-                }
-            }
-        };
-        */
-
         /**
          * $gridFieldName is generated from the ModelClass, e.g. if the Class 'News'
          * is managed by this ModelAdmin, the GridField for it will also be named 'News'
          */
-        $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass))->getConfig()
+         // Get gridfield name, should be Jimev-Models-News
+        $gridFieldName = $this->sanitiseClassName($this->modelClass);
+
+        // Get gridfield
+        $gridField = $form->Fields()->fieldByName($gridFieldName);
+
+        // Get gridfield config
+        $gridFieldConfig = $gridField->getConfig();
+
+        // Set number of items per page
+        $paginator = $gridFieldConfig->getComponentByType('SilverStripe\Forms\GridField\GridFieldPaginator')
+            ->setItemsPerPage($this->config()->get('items_per_page'));
+
+        // NEW: GridFieldLazyLoader added with 4.3
+        $gridFieldConfig->addComponent(new GridFieldLazyLoader());
+
+        // Remove Export and Print-Button
+        $gridFieldConfig
             ->removeComponentsByType(GridFieldExportButton::class)
-            ->removeComponentsByType(GridFieldPrintButton::class)
-            ->addComponent(new GridFieldDuplicateAction())
-            // NEW: GridFieldLazyLoader added with 4.3
-            ->addComponent(new GridFieldLazyLoader())
-            ->getComponentByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')->setRemoveRelation(false);
-            //->removeComponentsByType('GridFieldDeleteAction');
-            //->addComponent(new GridFieldDeleteAction());
-            //Injector::inst()->get(LoggerInterface::class)
-            //->debug('NewsAdmin - getEditForm()' . ' gridField=' . $gridField);
-            //Injector::inst()->get(LoggerInterface::class)
-            //->debug(get_class(&this) . ' - getEditForm()' . ' CMS_ACCESS_NewsAdmin ? '
-            //. Permission::check('CMS_ACCESS_NewsAdmin'));
+            ->removeComponentsByType(GridFieldPrintButton::class);
+
+        // Add duplicate action
+        $gridFieldConfig->addComponent(new GridFieldDuplicateAction());
+
+        // Remove "remove"
+        $gridFieldConfig->getComponentByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')
+            ->setRemoveRelation(false);
 
         return $form;
-    }
-
-    public function init()
-    {
-        parent::init();
     }
 }

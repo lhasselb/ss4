@@ -5,6 +5,7 @@ namespace Jimev\Models;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\TextAreaField;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\Security\Permission;
 
 use Jimev\Pages\FaqPage;
 
@@ -53,13 +54,13 @@ class Faq extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort = '';
+    private static $default_sort = 'LastEdited DESC';
 
     /**
      * Defines a default list of filters for the search context
      * @var array
      */
-    private static $searchable_fields = [];
+    private static $searchable_fields = ['Title'];
 
     public function Tags()
     {
@@ -86,29 +87,16 @@ class Faq extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('FaqPageID');
         $fields->removeByName('FAQTags');
         $question = TextAreaField::create('Question', 'Frage')->setRows(1);
         $answer = HtmlEditorField::create('Answer', 'Antwort');
 
-        Injector::inst()->get(LoggerInterface::class)
-            ->debug('FAQ - getCMSFields() ' . $answer . ' ');
+        // Injector::inst()->get(LoggerInterface::class)->debug('FAQ - getCMSFields() ' . $answer . ' ');
 
         $tag = TagField::create(
             'FAQTags',
-            'FAQ Bereich',
+            'FAQ Bereich(e)',
             FAQTag::get(),
             $this->FAQTags()
         )
@@ -118,5 +106,23 @@ class Faq extends DataObject
         $fields->addFieldsToTab('Root.Main', [$question,$answer,$tag]);
 
         return $fields;
+    }
+
+    /**
+     * Permission canView
+     * The DataObject class displayed must define a
+     * canView() method that returns a boolean on whether
+     * the user can view this record.
+     * @param [type] $member
+     * @return boolean
+     */
+    public function canView($member = null)
+    {
+        if (Permission::checkMember($member, 'CMS_ACCESS')) {
+            //user can access the CMS
+            return true;
+        } else {
+            return false;
+        }
     }
 }

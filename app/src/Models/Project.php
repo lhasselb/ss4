@@ -56,12 +56,23 @@ class Project extends DataObject
     ];
 
     private static $summary_fields = [
-        'ProjectTitle' => 'Name',
-        'ProjectDescription' => 'Beschreibung',
-        'getNiceProjectDate' => 'Datum',
-        'getTags' => 'Bereiche',
-        'ProjectImage.StripThumbnail' => 'Bild'
+        'ProjectTitle' => 'ProjectTitle',
+        'ProjectDescription' => 'ProjectDescription',
+        'ProjectDate' => 'ProjectDate',
+        'Tags' => 'Tags',
+        'ProjectImage.StripThumbnail' => 'ProjectImage.StripThumbnail'
     ];
+
+    public function fieldLabels($includerelations = true)
+    {
+        $labels = parent::fieldLabels($includerelations);
+        $labels['ProjectTitle'] = 'Name';
+        $labels['ProjectDescription'] = 'Beschreibung';
+        $labels['ProjectDate'] = 'Datum';
+        $labels['Tags'] = 'Bereiche';
+        $labels['ProjectImage.StripThumbnail'] = 'Bild';
+        return $labels;
+    }
 
     /**
     * @config
@@ -82,7 +93,7 @@ class Project extends DataObject
      * Defines a default sorting (e.g. within gridfield)
      * @var string
      */
-    private static $default_sort = '';
+    private static $default_sort = 'ProjectDate DESC';
 
     /**
      * Sets the Date field to the current date.
@@ -93,17 +104,24 @@ class Project extends DataObject
         parent::populateDefaults();
     }
 
-    public function getNiceProjectDate()
+    /**
+     * Used for $summary_fields
+     *
+     * @return string (formatted)
+     */
+    public function getProjectDate()
     {
-        /*$date = new Date();
-        $date->setValue($this->ProjectDate);
-        return $date->Format('d.m.Y');*/
         // Create a DBDate object
         $dbDate = $this->dbObject('ProjectDate');
         // Use strftime to utilize locale
         return strftime('%d.%m.%Y', $dbDate->getTimestamp());
     }
 
+    /**
+     * Used for $summary_fields
+     *
+     * @return string (formatted)
+     */
     public function getTags()
     {
         $tags = [];
@@ -115,9 +133,6 @@ class Project extends DataObject
 
     public function getProjectYear()
     {
-        /*$date = new Date();
-        $date->setValue($this->ProjectDate);
-        return $date->Year();*/
         // Create a DBDate object
         $dbDate = $this->dbObject('ProjectDate');
         // Use strftime to utilize locale
@@ -139,63 +154,29 @@ class Project extends DataObject
 
     public function getCMSFields()
     {
-
         $fields = parent::getCMSFields();
-
         //TODO: Add translation
         $fields->fieldByName('Root.Main')->setTitle('Projekt');#
-
         // TODO: Verify HtmlEditorConfig::set_active_identifier('basic');
-        /**
-         * Temporarily hide all link and file tracking tabs/fields in the CMS UI
-         * added in SS 4.2 until 4.3 is available
-         *
-         * Related GitHub issues and PRs:
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2227
-         *   - https://github.com/silverstripe/silverstripe-cms/issues/2251
-         *   - https://github.com/silverstripe/silverstripe-assets/pull/163
-         * */
-        $fields->removeByName(['FileTracking', 'LinkTracking']);
-
         $fields->removeByName('ProjectPageID');
         $fields->removeByName('ProjectTags');
         $fields->removeByName('URLSegment');
-
-        //$fields->addFieldToTab('Root.Main', TextField::create('URLSegment', $this->fieldLabel('URLSegment'))
-        //->setDescription('Wird beim Speichern generiert, bitte nur in vollem Bewusstsein ändern.'));
-
         $fields->addFieldToTab('Root.Projekt-Inhalt', HtmlEditorField::create('ProjectContent', 'Inhalt'));
-
         $date = DateField::create('ProjectDate', 'Datum');
         $fields->addFieldToTab('Root.Main', $date);
-
         $tags = TagField::create('ProjectTags', 'Projekt-Bereich(e)', ProjectTag::get(), $this->ProjectTags())
         ->setShouldLazyLoad(true) // tags should be lazy loaded
         ->setCanCreate(true);     // new tag DataObjects can be created
         $fields->addFieldToTab('Root.Main', $tags);
-
         $projectImage = new UploadField('ProjectImage', 'Projekt-Bild');
         $projectImage->setFolderName('projekte');
         $fields->addFieldToTab('Root.Main', $projectImage);
-
         return $fields;
-    }
-
-    public function fieldLabels($includerelations = true)
-    {
-        $labels = parent::fieldLabels($includerelations);
-        $labels['ProjectTitle'] = 'Name';
-        $labels['ProjectDescription'] = 'Beschreibung';
-        $labels['ProjectDate'] = 'Datum';
-
-        return $labels;
     }
 
     public function Link()
     {
         $projectPage = DataObject::get_one(ProjectPage::class);
-        //return $projectPage->Link();
-        //return Controller::join_links($projectPage->Link(),'projekt',$this->ID);
         return Controller::join_links($projectPage->Link(), 'projekt', $this->URLSegment);
     }
 
@@ -296,6 +277,13 @@ class Project extends DataObject
         return static::$cached_get_by_url[$str];
     }
 
+    /**
+     * All Permission use autogenerated Admin based permissions CMS_ACCESS_ProjectAdmin
+     * Permission canView
+     *
+     * @param [type] $member
+     * @return boolean
+     */
     public function canView($member = null)
     {
         return Permission::check('CMS_ACCESS_ProjectAdmin', 'any', $member);
@@ -308,9 +296,6 @@ class Project extends DataObject
 
     public function canDelete($member = null)
     {
-        if (Controller::curr() == 'NewsAdmin') {
-            return false;
-        }
         return Permission::check('CMS_ACCESS_ProjectAdmin', 'any', $member);
     }
 

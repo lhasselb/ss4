@@ -22,7 +22,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            <% loop Links %><tr><td class="col-md-4">$FriendlyLink</td><td clas="col-md-8">$Description</td></tr><% end_loop %>
+                                            <% loop Links %><tr><td class="col-md-4">$Me</td><td clas="col-md-8">$Description</td></tr><% end_loop %>
                                             </tbody>
                                         </table>
                                     </div>
