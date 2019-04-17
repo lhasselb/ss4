@@ -45,6 +45,12 @@ class GalleryAdmin extends ModelAdmin
     public $showImportForm = false;
 
     /**
+     * Change this variable if you don't want the gridfield search to appear.
+     * This variable can be a boolean or an array.
+     * If array, you can list className you want the form to appear on. i.e. array('myClassOne','myClassTwo')
+     */
+    //public $showSearchForm = false;
+    /**
      * @config
      */
     private static $items_per_page = 30;

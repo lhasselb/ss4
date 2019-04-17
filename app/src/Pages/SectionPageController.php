@@ -10,12 +10,11 @@ use SilverStripe\View\ArrayData;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Control\HTTPRequest;
-
-use Jimev\Models\Course;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
+
+use Jimev\Models\Course;
 
 class SectionPageController extends PageController
 {
@@ -43,7 +42,6 @@ class SectionPageController extends PageController
 
     public function kurs(HTTPRequest $request)
     {
-        // Use Gallery::get()->byID()
         $course = Course::get_by_url_segment(Convert::raw2sql($request->param('ID')));
         if (!$course) {
             return $this->httpError(404, 'Der gewünschte Kurs existiert nicht.');
@@ -51,29 +49,13 @@ class SectionPageController extends PageController
         return ['Course' => $course];
     }
 
+    /**
+     * Create a course items list
+     * @return PaginatedList list containing course items
+     */
     public function PaginatedCourses($num = 5)
     {
-        $start = isset($_GET['start']) ? (int) $_GET['start'] : 0;
-        //SS_Log::log('start='.$start,SS_Log::WARN);
-        //SS_Log::log('list count='.$this->Courses()->count(),SS_Log::WARN);
-        //->sort(['News.NewsDate'=>'DESC']); //News.ExpireDate might  be better?
-        $list = $this->Courses()->sort(['News.NewsDate'=>'DESC']);
-        if ($list) {
-            $courses = PaginatedList::create($list, $this->getRequest())->setPageLength($num);
-        }
-        //SS_Log::log('paginated course count='.$courses->count(),SS_Log::WARN);
-        return $courses;
-    }
-
-    // TODO: Move to extension
-    public function getCurrentCourse()
-    {
-        $Params = $this->getURLParams();
-        $URLSegment = Convert::raw2sql($Params['ID']);
-
-        if ($URLSegment && $course = DataObject::get_one(Course::class, "URLSegment = '" . $URLSegment . "'")) {
-            return $course;
-        }
+        return $courses = PaginatedList::create($this->Courses(), $this->getRequest())->setPageLength($num);
     }
 
     // TODO: Move to extension
@@ -105,5 +87,16 @@ class SectionPageController extends PageController
             $page = $page->Parent;
         }
         return new ArrayList(array_reverse($pages));
+    }
+
+    // TODO: Move to extension
+    public function getCurrentCourse()
+    {
+        $Params = $this->getURLParams();
+        $URLSegment = Convert::raw2sql($Params['ID']);
+
+        if ($URLSegment && $course = DataObject::get_one(Course::class, "URLSegment = '" . $URLSegment . "'")) {
+            return $course;
+        }
     }
 }

@@ -3,20 +3,16 @@
 namespace Jimev\Pages;
 
 use \PageController;
-
 use SilverStripe\View\Requirements;
 use SilverStripe\ORM\PaginatedList;
-use Jimev\Models\News;
-
-//use Site\Templates\DeferedRequirements;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
 
+use Jimev\Models\News;
+
 class HomePageController extends PageController
 {
-
     /**
      * An array of actions that can be accessed via a request. Each array element should be an action name, and the
      * permissions or conditions required to allow the user to access it.
@@ -41,13 +37,13 @@ class HomePageController extends PageController
     }
 
     /**
-     * Create a news items list
+     * Create a paginated news items list
      * @return PaginatedList list containing news items
      */
     public function PaginatedLatestNews($num = 10)
     {
         $today = date('Y-m-d');
-        $start = isset($_GET['start']) ? (int) $_GET['start'] : 0;
+
         $list = News::get()
             // Get all with a valid HomepageSectionID
             ->filterAny(['HomepageSectionID:GreaterThan' => '0'])
@@ -62,6 +58,6 @@ class HomePageController extends PageController
         }
         */
 
-        return new PaginatedList($list, $this->getRequest());
+        return PaginatedList::create($list, $this->getRequest())->setPageLength($num);
     }
 }

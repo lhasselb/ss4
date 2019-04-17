@@ -8,11 +8,11 @@ use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 //NEW: Added with 4.3
 use SilverStripe\Forms\GridField\GridFieldLazyLoader;
-// See https://github.com/jinjie/duplicate-dataobject
-use SwiftDevLabs\DuplicateDataObject\Forms\GridField\GridFieldDuplicateAction;
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
+// See https://github.com/jinjie/duplicate-dataobject
+use SwiftDevLabs\DuplicateDataObject\Forms\GridField\GridFieldDuplicateAction;
 
 use Jimev\Models\News;
 

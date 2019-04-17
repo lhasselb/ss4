@@ -6,15 +6,16 @@ use \Page;
 
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-// 3rdparty
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
+/* 3rdparty */
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 use Jimev\Models\HomepageSlider;
 use Jimev\Models\Alarm;
-
-/* Logging */
-use SilverStripe\Core\Injector\Injector;
-use Psr\Log\LoggerInterface;
 
 /**
  * HomePage
@@ -59,21 +60,21 @@ class HomePage extends Page
         // SLIDER
         // The DataObject class displayed must define a
         // canView() method that returns a boolean on whether the user can view this record.
+        $sliderGridField = new GridField('SLider', 'Bild(er) auf der Startseite', $this->Sliders());
         $sliderConfig = GridFieldConfig_RecordEditor::create();
         $sliderConfig->addComponent(new GridFieldSortableRows('SortOrder'));
-        $sliderGridField = new GridField('SLider', 'Bild(er) auf der Startseite', $this->Sliders());
         $sliderGridField->setConfig($sliderConfig);
         $fields->addFieldToTab('Root.Slider-Bilder', $sliderGridField);
 
         // ALARM
-        $alarmConfig = GridFieldConfig_RecordEditor::create();
-        if ($this->Alarm()->count() > 0) {
-            // remove the buttons if we don't want to allow more records to be added/created
-            $alarmConfig->removeComponentsByType('GridFieldAddNewButton');
-            $alarmConfig->removeComponentsByType('GridFieldAddExistingAutocompleter');
-        }
         $alarmGridField = new GridField('Alarm', 'Alarm auf der Startseite', $this->Alarm());
+        $alarmConfig = GridFieldConfig_RecordEditor::create();
         $alarmGridField->setConfig($alarmConfig);
+        if ($this->Alarm()->count() > 0) {
+            // remove the buttons. We don't want to allow more records to be added/created
+            $alarmConfig->removeComponentsByType(GridFieldAddNewButton::class);
+            // $alarmConfig->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
+        }
         $fields->addFieldToTab('Root.Alarm', $alarmGridField);
 
         return $fields;

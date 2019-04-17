@@ -2,36 +2,32 @@
 
 // Global (name)space!
 namespace {
-    use SilverStripe\ORM\DataObject;
-
     use SilverStripe\CMS\Model\SiteTree;
-    use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
-    use SilverStripe\View\ArrayData;
-    use SilverStripe\Control\HTTPRequest;
-
-    use Jimev\Pages\HomePage;
-    use Jimev\Pages\KontaktPage;
-
     /* Logging */
     use SilverStripe\Core\Injector\Injector;
     use Psr\Log\LoggerInterface;
 
+    use Jimev\Pages\HomePage;
+    use Jimev\Pages\KontaktPage;
+
     /**
      * Default Page object
      *
-     * @package app
-     * @subpackage Pages
-     *
+     * @package Jimev
+     * @subpackage Model
+     * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+     * @since 15.03.2016
+     * @copyright 2016 [sybeha]
+     * @license see license file in modules root directory
      */
     class Page extends SiteTree
     {
         private static $singular_name = 'Seite';
         private static $description = 'Standard-Seite';
-        private static $db = [];
-        private static $has_one = [];
 
         /**
          * Make Homepage Alerts accessible from all pages
+         * @return SilverStripe\ORM\ManyManyList list;
          */
         public function getAlert()
         {
@@ -45,6 +41,8 @@ namespace {
 
         /**
          * Make Facebook Links accessible from all pages
+         * TODO: DataObject FacebookLinks will be removed after migration
+         * @return SilverStripe\ORM\ManyManyList list;
          */
         public function getFacebookLinks()
         {
@@ -52,6 +50,24 @@ namespace {
                 //return KontaktPage::get()->First()->FacebookLinks();
                 return KontaktPage::get()->First()->Links();
             }
+        }
+
+        /**
+         * Generate the copyright string for the pages
+         *
+         * @param string $startYear
+         * @param string $separator
+         * @return string
+         */
+        public function Copyright($startYear = "2007", $separator = "-")
+        {
+            $currentYear = date('Y');
+            if (!empty($startYear)) {
+                $output = ($startYear>=$currentYear ? $currentYear : $startYear.$separator.$currentYear);
+            } else {
+                $output = $currentYear;
+            }
+            return $output;
         }
     }
 }

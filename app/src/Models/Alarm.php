@@ -2,21 +2,19 @@
 
 namespace Jimev\Models;
 
+//Add global namespace
+use \DateTime;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorConfig;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Permission;
-
-use Jimev\Pages\HomePage;
-
-//Add global namespace
-use \DateTime;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
+
+use Jimev\Pages\HomePage;
 
 /**
  * Alarm DataObject to store alarm messages.

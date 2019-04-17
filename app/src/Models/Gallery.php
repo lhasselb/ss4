@@ -16,24 +16,33 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldPaginator;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
+//NEW: Added with 4.3
+use SilverStripe\Forms\GridField\GridFieldLazyLoader;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Security\Permission;
-//use SilverStripe\Control\Director;
 use SilverStripe\TagField\TagField;
-
-use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
 
 use Jimev\Pages\FotosPage;
 use Jimev\Models\GalleryImage;
 use Jimev\Models\GalleryTag;
 
-/* Logging */
-use SilverStripe\Core\Injector\Injector;
-use Psr\Log\LoggerInterface;
+// See https://github.com/UndefinedOffset/SortableGridField
+use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 /**
  * Gallery DataObject
- * See https://github.com/arambalakjian/DataObject-as-Page/blob/master/code/DataObjects/DataObjectAsPage.php
+ * to store a slider object for the homepage.
+ * @package Jimev
+ * @subpackage Model
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
  */
 class Gallery extends DataObject
 {
@@ -102,7 +111,7 @@ class Gallery extends DataObject
         'Tags' => 'Bereiche',
         'ImageNumber' => 'Anzahl der Bilder',
         'ImageFolder' => 'ImageFolder',
-        'AlbumImage.StripThumbnail' => 'AlbumImage.StripThumbnail',
+        'Thumb' => 'Album-Bild',
     ];
 
     public function fieldLabels($includerelations = true)
@@ -114,9 +123,14 @@ class Gallery extends DataObject
         $labels['Tags'] = 'Tags';
         $labels['ImageNumber'] = 'Anzahl der Bilder';
         $labels['ImageFolder'] = 'Verzeichnis';
-        $labels['AlbumImage.StripThumbnail'] = 'Album-Bild';
+        $labels['Thumb'] = 'Album-Bild';
         return $labels;
     }
+
+    /**
+     * @config
+     */
+    private static $items_per_page = 30;
 
     /* Dynamic defaults for object instance
      * Sets the Date field to the current date.
@@ -127,6 +141,15 @@ class Gallery extends DataObject
         //$this->AlbumDate = date('Y-m-d');
         $this->AlbumDate = date('d.m.Y');
         parent::populateDefaults();
+    }
+
+    public function getThumb()
+    {
+        if ($this->AlbumImage()->exists()) {
+            return $this->AlbumImage()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
+        }
     }
 
     public function getTags()
@@ -232,17 +255,25 @@ class Gallery extends DataObject
 
             $gridFieldConfig = GridFieldConfig_RecordEditor::create();
 
+            // NEW: GridFieldLazyLoader added with 4.3
+            // Causes a "unwanted" change on page which teases the user on leaving
+            //$gridFieldConfig->addComponent(new GridFieldLazyLoader());
+
+            // Set number of items per page
+            $paginator = $gridFieldConfig->getComponentByType('SilverStripe\Forms\GridField\GridFieldPaginator')
+                ->setItemsPerPage($this->config()->get('items_per_page'));
+
             // Remove bulk delete action from non Administrators
             if (Permission::check('ADMIN') || $this->canDelete()) {
                 // Add GridFieldBulkManager
                 $gridFieldConfig->addComponent(new \Colymba\BulkManager\BulkManager());
-                // Remove bulk actions
+                // Remove unwanted bulk actions
                 $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
                     ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\UnlinkHandler');
                 $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
                     ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\EditHandler');
-                $gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
-                    ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\DeleteHandler');
+                //$gridFieldConfig->getComponentByType('Colymba\\BulkManager\\BulkManager')
+                //    ->removeBulkAction('Colymba\\BulkManager\\BulkAction\\DeleteHandler');
             }
 
             // Add BulkUploader
@@ -250,11 +281,15 @@ class Gallery extends DataObject
             // Used to determine upload folder
             $gridFieldConfig->getComponentByType('Colymba\\BulkUpload\\BulkUploader')
                 ->setUfSetup('setFolderName', $uploadfoldername);
-            // Customise gridfield
-            $gridFieldConfig->removeComponentsByType('GridFieldPaginator'); // Remove default paginator
-            $gridFieldConfig->addComponent(new GridFieldPaginator(20)); // Add custom paginator
-            $gridFieldConfig->addComponent(new GridFieldSortableRows('SortOrder'));
-            $gridFieldConfig->removeComponentsByType('GridFieldAddNewButton'); // We only use bulk upload button
+
+            // Add this only if paging is not required
+            if ($this->GalleryImages()->count() < $this->config()->get('items_per_page')) {
+                $gridFieldConfig->addComponent(new GridFieldSortableRows('SortOrder'));
+            }
+
+            // We only use bulk upload button
+            //$gridFieldConfig->removeComponentsByType(GridFieldAddNewButton::class);
+            $gridFieldConfig->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
 
             // Creates sortable grid field
             $gridfield = new GridField('GalleryImages', 'Fotos', $this->GalleryImages()

@@ -77,6 +77,8 @@ class LinkSet extends DataObject
         $config = GridFieldConfig_RecordEditor::create();
         $gridfield = GridField::create('Links', 'Links', $this->Links(), $config);
         $fields->addFieldToTab('Root.Main', $gridfield);
+        //TODO: Add translation
+        $fields->fieldByName('Root.Main')->setTitle('Sammlung');
         return $fields;
     }
 

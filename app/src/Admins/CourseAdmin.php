@@ -9,11 +9,11 @@ use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 //NEW: Added with 4.3
 use SilverStripe\Forms\GridField\GridFieldLazyLoader;
 use SilverStripe\View\Requirements;
-// See https://github.com/jinjie/duplicate-dataobject
-use SwiftDevLabs\DuplicateDataObject\Forms\GridField\GridFieldDuplicateAction;
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
+// See https://github.com/jinjie/duplicate-dataobject
+use SwiftDevLabs\DuplicateDataObject\Forms\GridField\GridFieldDuplicateAction;
 
 use Jimev\Models\Course;
 

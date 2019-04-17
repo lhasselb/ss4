@@ -26,6 +26,7 @@ const FormBasics = (($) => {
             $selectFields.each((i, el) => {
                 const $el = $(el);
 
+                // Using selectpicker from https://github.com/snapappointments/bootstrap-select
                 $el.selectpicker({
                     liveSearch: $el.data('live-search')
                 });

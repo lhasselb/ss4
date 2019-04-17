@@ -105,7 +105,7 @@ class News extends DataObject
         'NewsDate' => 'NewsDate',
         'ExpireDate' => 'ExpireDate',
         'OnHomepage' => 'OnHomepage',
-        'NewsImage.StripThumbnail' => 'NewsImage.StripThumbnail',
+        'Thumb' => 'Bild',
     ];
 
     public function fieldLabels($includerelations = true)
@@ -120,7 +120,7 @@ class News extends DataObject
         $labels['NewsDate'] = 'Anzeige-Datum';
         $labels['ExpireDate'] = 'Ablauf-Datum';
         $labels['NewsImage'] = 'News-Bild';
-        $labels['NewsImage.StripThumbnail'] = 'Miniaturbild';
+        $labels['Thumb'] = 'Bild';
         return $labels;
     }
 
@@ -148,6 +148,15 @@ class News extends DataObject
         $this->NewsDate = date('d.m.Y');
         $this->NewsTitle = 'Schlagzeile - Bitte ändern!';
         parent::populateDefaults();
+    }
+
+    public function getThumb()
+    {
+        if ($this->NewsImage()->exists()) {
+            return $this->NewsImage()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
+        }
     }
 
     /**

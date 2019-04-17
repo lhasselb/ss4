@@ -3,7 +3,6 @@
 namespace Jimev\Pages;
 
 use \Page;
-
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 
@@ -23,8 +22,7 @@ class KontaktPage extends Page
     private static $can_be_root = true;
     private static $allowed_children = 'none';
 
-    private static $db = [];
-
+    // TODO: Remove FacebookLinks after migration
     //private static $has_many = ['FacebookLinks' => FacebookLink::class . '.KontaktPage'];
     private static $many_many = ['Links' => Link::class];
     /*

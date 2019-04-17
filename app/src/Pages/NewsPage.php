@@ -5,6 +5,9 @@ namespace Jimev\Pages;
 use \Page;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
+/* Logging */
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
 
 use Jimev\Models\News;
 
@@ -27,36 +30,41 @@ class NewsPage extends Page
      */
     private static $table_name = 'NewsPage';
 
-    public function fieldLabels($includerelations = true)
-    {
-        $labels = parent::fieldLabels($includerelations);
-        //$labels['Linkset'] = 'Sammlung';
-        return $labels;
-    }
-
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
+        // Hide the Content field
         $fields->removeByName('Content');
         return $fields;
     }
 
+    /**
+     * Create a list for news archive navigation (by year)
+     *
+     * @return SilverStripe\ORM\ArrayList list;
+     */
     public function ArchiveDates()
     {
+        // Store the selected data
         $list = ArrayList::create();
-        $newsList = News::get();
-        if ($newsList) {
-            foreach ($newsList as $news) {
-                $year = $news->getYear();
-                if (!$list->find('Year', $year)) {
-                    $list->push(ArrayData::create([
-                        'Year' => $year,
-                        'Link' => $this->Link('date/'.$year),
-                        'NewsCount' => News::get()->filterAny('NewsDate:PartialMatch', $year)->count()
-                    ]));
-                }
+        // Get all news DataObjects with a valid section
+        $allNews = News::get()->filter(['HomepageSectionID:GreaterThan' => '0']);
+        foreach ($allNews as $news) {
+            // Get the year from news DataObject
+            $year = $news->getYear();
+            // Add year "unique"
+            if (!$list->find('Year', $year)) {
+                $list->push(ArrayData::create([
+                    'Year' => $year,
+                    'Link' => $this->Link('date/'.$year),
+                    'NewsCount' => News::get()->filter([
+                        'HomepageSectionID:GreaterThan' => '0',
+                        'NewsDate:PartialMatch' => $year
+                    ])->count()
+                ]));
             }
         }
+
         return $list;
     }
 }

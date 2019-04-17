@@ -62,3 +62,10 @@
 .class-Jimev_Pages_CalendarPage:before {
     background-image: url(../../icons/calendar.png);
 }*/
+
+/* Correction for Silverstripe Admin css overwriting styling for bulk editing tools
+ * https://github.com/colymba/GridFieldBulkEditingTools
+ */
+ .bulkSelect, .bulkSelectAll{
+    position: relative;
+}

@@ -17,12 +17,7 @@
                             </div>
                             <div class="col-md-3">
                             <ul class="c-icons c-theme-ul c-right c-links">
-                                <li>
-                                    <a data-original-title="Facebook-Gruppen"
-                                    data-animation="false" data-easein="bounceInLeft" href="#" rel="popover" data-placement="top"
-                                    data-content="<% loop FacebookLinks %><% if Last %><a href='$FacebookLink.URL' class='jimevLink' $FacebookLink.TargetAttr>$FacebookLink.Title</a>
-<% else %><a href='$FacebookLink.URL' class='jimevLink' $FacebookLink.TargetAttr>$FacebookLink.Title</a><br/><% end_if %><% end_loop %>" data-html="true" aria-describedby="popoverFacebook"><span><i class="fab fa-facebook-square fa-lg"></i></span></a>
-                                </li>
+                                <li><a data-original-title="Facebook-Gruppen" data-animation="false" data-easein="bounceInLeft" href="#" rel="popover" data-placement="top" data-content="<% loop FacebookLinks %><% if Last %><a href='$Me.URL' class='jimevLink' $FacebookLink.TargetAttr>$Me.Title</a><% else %><a href='$Me.URL' class='jimevLink' $Me.TargetAttr>$Me.Title</a><br/><% end_if %><% end_loop %>" data-html="true" aria-describedby="popoverFacebook"><span><i class="fab fa-facebook-square fa-lg"></i></span></a></li>
                             </ul>
                             </div>
 

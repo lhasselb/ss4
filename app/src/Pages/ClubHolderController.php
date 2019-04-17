@@ -28,6 +28,5 @@ class ClubHolderController extends PageController
     protected function init()
     {
         parent::init();
-        $theme = $this->themeDir();
-    } //init()
+    }
 }

@@ -3,20 +3,6 @@
 namespace {
 
     use SilverStripe\CMS\Controllers\ContentController;
-    use SilverStripe\View\SSViewer;
-    use SilverStripe\Forms\Form;
-    use SilverStripe\Forms\EMailField;
-    use SilverStripe\Forms\TextField;
-    use SilverStripe\Forms\TextAreaField;
-    use SilverStripe\Forms\FieldList;
-    use SilverStripe\Forms\FormAction;
-    use SilverStripe\Forms\RequiredFields;
-    use SilverStripe\View\Requirements;
-    use SilverStripe\Control\Email\Email;
-    use SilverStripe\Control\Director;
-    /* Logging */
-    use SilverStripe\Core\Injector\Injector;
-    use Psr\Log\LoggerInterface;
 
     class PageController extends ContentController
     {
@@ -40,28 +26,6 @@ namespace {
         protected function init()
         {
             parent::init();
-            // You can include any CSS or JS required by your project here.
-            // See: http://doc.silverstripe.org/framework/en/reference/requirements
-        }
-
-        /**
-         * Information about dev environment type
-         * @return boolean true if environment type equals dev
-         */
-        public function isDev()
-        {
-            return Director::isDev();
-        }
-
-        public function Copyright($startYear = "2007", $separator = "-")
-        {
-            $currentYear = date('Y');
-            if (!empty($startYear)) {
-                $output = ($startYear>=$currentYear ? $currentYear : $startYear.$separator.$currentYear);
-            } else {
-                $output = $currentYear;
-            }
-            return $output;
         }
     }
 }

@@ -109,7 +109,7 @@ class Course extends DataObject
         'CourseTitle' => 'Kurstitel',
         //'URLSegment' => 'URL-Segment',
         'SectionList' => 'Bereiche',
-        'CourseImage.StripThumbnail' => 'Miniaturbild',
+        'Thumb' => 'Bild',
     ];
 
     /**
@@ -126,14 +126,6 @@ class Course extends DataObject
     private static $searchable_fields = ['CourseTitle'];
 
     /**
-     * Set object defaults
-     */
-    public function populateDefaults()
-    {
-        //Not implemented
-    }
-
-    /**
      * / Used for $summary_fields
      *
      * @return void
@@ -142,6 +134,15 @@ class Course extends DataObject
     {
         if ($this->Sections()->exists()) {
             return implode(', ', $this->Sections()->column('Title'));
+        }
+    }
+
+    public function getThumb()
+    {
+        if ($this->CourseImage()->exists()) {
+            return $this->CourseImage()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
         }
     }
 

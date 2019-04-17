@@ -60,7 +60,7 @@ class Project extends DataObject
         'ProjectDescription' => 'ProjectDescription',
         'ProjectDate' => 'ProjectDate',
         'Tags' => 'Tags',
-        'ProjectImage.StripThumbnail' => 'ProjectImage.StripThumbnail'
+        'Thumb' => 'Bild'
     ];
 
     public function fieldLabels($includerelations = true)
@@ -70,7 +70,7 @@ class Project extends DataObject
         $labels['ProjectDescription'] = 'Beschreibung';
         $labels['ProjectDate'] = 'Datum';
         $labels['Tags'] = 'Bereiche';
-        $labels['ProjectImage.StripThumbnail'] = 'Bild';
+        $labels['Thumb'] = 'Bild';
         return $labels;
     }
 
@@ -102,6 +102,15 @@ class Project extends DataObject
     {
         $this->ProjectDate = date('Y-m-d');
         parent::populateDefaults();
+    }
+
+    public function getThumb()
+    {
+        if ($this->ProjectImage()->exists()) {
+            return $this->ProjectImage()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
+        }
     }
 
     /**
@@ -261,7 +270,7 @@ class Project extends DataObject
     protected static $cached_get_by_url = [];
 
     /**
-     * @param $str
+     * @param string $str
      * @return Course|Boolean
      */
     public static function get_by_url_segment($str, $excludeID = null)

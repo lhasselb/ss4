@@ -3,20 +3,15 @@
 namespace Jimev\Pages;
 
 use \PageController;
-//use SilverStripe\Core\Convert;
-//use SilverStripe\ORM\DataObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Convert;
-//use SilverStripe\Assets\Image;
-//use SilverStripe\View\Requirements;
 use SilverStripe\ORM\PaginatedList;
-
-use Jimev\Models\Gallery;
-use Jimev\Models\GalleryImage;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
+
+use Jimev\Models\Gallery;
+use Jimev\Models\GalleryImage;
 
 class FotosPageController extends PageController
 {

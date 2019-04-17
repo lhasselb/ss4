@@ -2,6 +2,7 @@
 
 namespace Jimev\Models;
 
+use \Page;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Assets\Image;
 use SilverStripe\View\Requirements;
@@ -13,22 +14,29 @@ use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Security\Permission;
-
-use Jimev\Pages\HomePage;
-use \Page;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
+
+use Jimev\Pages\HomePage;
 
 /* See https://github.com/gorriecoe/silverstripe-link */
 use gorriecoe\Link\Models\Link;
 /* See https://github.com/gorriecoe/silverstripe-linkfield */
 use gorriecoe\LinkField\LinkField;
 
+/**
+ * HomepageSlider DataObject
+ * to store a slider object for the homepage.
+ * @package Jimev
+ * @subpackage Model
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
+ */
 class HomepageSlider extends DataObject
 {
-
     private static $singular_name = 'Slider-Bild';
     private static $plural_name = 'Slider-Bilder';
 
@@ -81,7 +89,7 @@ class HomepageSlider extends DataObject
         'Headline' => 'Schlagzeile',
         'Link' => 'Link',
         //'LinkText' => 'Text',
-        'SliderImage.StripThumbnail' => 'Vorschau'
+        'Thumb' => 'Bild'
     ];
 
     /**
@@ -92,6 +100,15 @@ class HomepageSlider extends DataObject
 
     /* SortOrder used by sortable gridfield */
     private static $default_sort='SortOrder';
+
+    public function getThumb()
+    {
+        if ($this->SliderImage()->exists()) {
+            return $this->SliderImage()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
+        }
+    }
 
     /**
      * @return FieldList
@@ -147,7 +164,7 @@ class HomepageSlider extends DataObject
     }
 
     /**
-     * @return void
+     * TODO: Remove after migration
      */
     public function onBeforeWrite()
     {

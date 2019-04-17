@@ -47,7 +47,7 @@ class LinkPage extends Page
         );*/
         $fields->removeByName('Content');
         $config = GridFieldConfig_RecordEditor::create();
-        //$config->removeComponentsByType($config->getComponentByType('GridFieldAddNewButton'));
+        //$config->removeComponentsByType($config->getComponentByType(GridFieldAddNewButton::class));
         $gridfield = GridField::create("Linkset", "Link-Sammlungen", $this->Linkset(), $config);
         //$fields->addFieldToTab('Root.Link-Sammlungen', $gridfield);
         $fields->addFieldToTab('Root.Main', $gridfield, 'Metadata');

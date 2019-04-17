@@ -9,14 +9,24 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\TextAreaField;
 use SilverStripe\AssetAdmin\Forms\UploadField;
-
-
-use Jimev\Models\Gallery;
-
 /* Logging */
 use SilverStripe\Core\Injector\Injector;
 use Psr\Log\LoggerInterface;
 
+use Jimev\Models\Gallery;
+
+/**
+ * GalleryImage DataObject
+ * to store an Image used wthin Galleries
+ * Fields could also be added by an Extension
+ * but with this object the management is easier.
+ * @package Jimev
+ * @subpackage Model
+ * @author Lars Hasselbach <lars.hasselbach@gmail.com>
+ * @since 15.03.2016
+ * @copyright 2016 [sybeha]
+ * @license see license file in modules root directory
+ */
 class GalleryImage extends DataObject
 {
     private static $singular_name = 'Foto';
@@ -33,6 +43,10 @@ class GalleryImage extends DataObject
      */
     private static $table_name = 'GalleryImage';
 
+    /**
+     * Database fields
+     * @var array
+     */
     private static $db = [
       'SortOrder' => 'Int',
       'Title' => 'Varchar',
@@ -53,7 +67,6 @@ class GalleryImage extends DataObject
      * @var array List of has_many or many_many relationships owned by this object.
      */
     private static $owns = ['Image'];
-    private static $defaults = [];
 
     /**
      * Sets the Date field to the current date.
@@ -68,7 +81,7 @@ class GalleryImage extends DataObject
      * Defines a default list of filters for the search context
      * @var array
      */
-    private static $searchable_fields = [];
+    private static $searchable_fields = ['Title','Description'];
 
     /**
      * Hint: Use SortOrder with 3rd party module for DragAndDrop sorting
@@ -79,9 +92,27 @@ class GalleryImage extends DataObject
 
     // Tell the datagrid what fields to show in the table
     private static $summary_fields = [
-        'Title' => 'Titel',
-        'Image.StripThumbnail' => 'Vorschau'
+        'Title' => 'Bildname',
+        'Thumb' => 'Bild'
     ];
+
+    public function fieldLabels($includerelations = true)
+    {
+        $labels = parent::fieldLabels($includerelations);
+        $labels['Title'] = 'Bildname';
+        $labels['Description'] = 'Beschreibung';
+        $labels['Thumb'] = 'Bild';
+        return $labels;
+    }
+
+    public function getThumb()
+    {
+        if ($this->Image()->exists()) {
+            return $this->Image()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
+        }
+    }
 
     // Add fields to dataobject
     public function getCMSFields()
@@ -92,7 +123,7 @@ class GalleryImage extends DataObject
 
         $fields = new FieldList(
             new TextField('Title', 'Foto-Titel'),
-            new TextAreaField('Description', 'Foto Beschreibung (Max 280 Zeichen)'),
+            new TextAreaField('Description', 'Foto Beschreibung (Maximal 280 Zeichen)'),
             new UploadField('Image', 'Foto')
         );
         return $fields;

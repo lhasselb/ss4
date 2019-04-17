@@ -51,7 +51,7 @@ class Vorstand extends DataObject
     private static $summary_fields = [
         'Name'=> 'Name',
         'Role' => 'Funktion',
-        'Bild.StripThumbnail' => 'Vorschau'
+        'Thumb' => 'Bild'
     ];
 
     /**
@@ -79,6 +79,15 @@ class Vorstand extends DataObject
         $labels['Role'] = 'Funktion';
         $labels['Mail'] = 'E-Mail';
         return $labels;
+    }
+
+    public function getThumb()
+    {
+        if ($this->Bild()->exists()) {
+            return $this->Bild()->StripThumbnail();
+        } else {
+            return 'Kein Bild';
+        }
     }
 
     public function getCMSFields()
