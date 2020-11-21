@@ -19,10 +19,10 @@ SilverStripe\Core\Injector\Injector:
 # ----------------------------------
 # TODO: Switch Image library for migration (disable again !)
 # ----------------------------------
-SilverStripe\Core\Injector\Injector:
-  Intervention\Image\ImageManager:
-    constructor:
-      - { driver: imagick }
+#SilverStripe\Core\Injector\Injector:
+#  Intervention\Image\ImageManager:
+#    constructor:
+#      - { driver: imagick }
 # ----------------------------------
 # ----------------------------------
 # Automatically migrate file
@@ -36,9 +36,11 @@ SilverStripe\Core\Injector\Injector:
 # Settings for UploadField
 # ----------------------------------
 SilverStripe\Assets\Upload_Validator:
-  default_max_file_size:
+  allowedMaxFileSize:
     '[image]': '1M'
     'jpg': '1M'
+    'png': '1M'
+    'gif': '1M'
 # ----------------------------------
 # ----------------------------------
 # FocusPoint

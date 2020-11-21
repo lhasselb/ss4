@@ -60,4 +60,29 @@ class HomePageController extends PageController
 
         return PaginatedList::create($list, $this->getRequest())->setPageLength($num);
     }
+
+    /**
+     * Create a news items list
+     * @return DataList list containing news items
+     */
+    public function LatestNews()
+    {
+        $today = date('Y-m-d');
+
+        $list = News::get()
+            // Get all with a valid HomepageSectionID
+            ->filterAny(['HomepageSectionID:GreaterThan' => '0'])
+            // Exclude the expited ones
+            ->filter('ExpireDate:GreaterThan', $today);
+
+        /*
+        foreach ($list as $news) {
+            Injector::inst()
+            ->get(LoggerInterface::class)
+            ->debug('HomePageController - PaginatedLatestNews() news = ' . $news->Title . ' link=' . $news->Link());
+        }
+        */
+
+        return $list;
+    }
 }

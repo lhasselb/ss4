@@ -56,7 +56,7 @@ class CalendarPage extends Page
     {
         $fields = parent::getCMSFields();
         // Customise TinyMCE
-        TinyMCEConfig::get('cms')->setContentCSS([ '/app/client/dist/css/CalendarPageTinyMCE.css' ]);
+        TinyMCEConfig::get('cms')->setContentCSS([ '/resources/app/client/dist/css/CalendarPageTinyMce.css' ]);
         TinyMCEConfig::get('cms')->setButtonsForLine(1, 'bullist', 'sslink', 'unlink', 'code');
         TinyMCEConfig::get('cms')->addButtonsToLine(1, 'styleselect')
         ->setOptions([

@@ -53,6 +53,5 @@ $templatesPath = dirname(__FILE__) . '/templates/Helper/pdfIcon.html';
 //Injector::inst()->get(LoggerInterface::class)->debug('_config.php - templatesPath() = ' . $templatesPath);
 */
 
-
 // NO Search yet - future ?
 //FulltextSearchable::enable();

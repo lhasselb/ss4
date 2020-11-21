@@ -5,16 +5,25 @@ import moment from 'moment';
 /* NEW v4 version */
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
+//import timeGridPlugin from '@fullcalendar/timegrid';
+//import listPlugin from '@fullcalendar/list';
 import googleCalendar from '@fullcalendar/google-calendar';
 import deLocale from '@fullcalendar/core/locales/de';
 import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
+//import '@fullcalendar/timegrid/main.css';
+//import '@fullcalendar/list/main.css';
 
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     const calendar = new Calendar(calendarEl, {
+        header: {
+            left: 'today, prev,next',
+            center: 'title',
+            right: 'dayGridMonth, dayGridWeek, dayGridDay'
+        },
         height: 900,
-        plugins: [ dayGridPlugin, googleCalendar ],
+        plugins: [ dayGridPlugin, googleCalendar ], //timeGridPlugin, listPlugin,
         locale: deLocale,
         timezone: 'local',
         googleCalendarApiKey: 'AIzaSyB6cztHJTF4Xn6LJUiNNhCGyItBzO6xyhs',

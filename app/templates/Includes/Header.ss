@@ -27,7 +27,11 @@
         <div class="container">
             <div class="c-navbar-wrapper clearfix">
                 <div class="c-brand c-pull-left">
-                    <a href="$BaseHref" class="c-logo"><img src="{$AbsoluteBaseURL}resources/app/client/dist/img/logo/logo.svg" alt="Jim e.V." class="c-desktop-logo" style="width: 170px; height: 70px;"><img src="{$AbsoluteBaseURL}resources/app/client/dist/img/logo/logo.svg" alt="Jim e.V." class="c-desktop-logo-inverse" style="width: 150px; height: 61px;"><img src="{$AbsoluteBaseURL}resources/app/client/dist/img/logo/logo.svg" alt="Jim e.V." class="c-mobile-logo" style="width: 87px; height: 35px;"></a>
+                    <a href="$BaseHref" class="c-logo">
+                        <img src="{$AbsoluteBaseURL}_resources/app/client/dist/img/logo/logo.svg" alt="Jim e.V." class="c-desktop-logo" style="width: 170px; height: 70px;">
+                        <img src="{$AbsoluteBaseURL}_resources/app/client/dist/img/logo/logo.svg" alt="Jim e.V." class="c-desktop-logo-inverse" style="width: 150px; height: 61px;">
+                        <img src="{$AbsoluteBaseURL}_resources/app/client/dist/img/logo/logo.svg" alt="Jim e.V." class="c-mobile-logo" style="width: 87px; height: 35px;">
+                    </a>
                     <button class="c-hor-nav-toggler" type="button" data-target=".c-mega-menu"><span class="c-line"></span><span class="c-line"></span><span class="c-line"></span></button>
                     <button class="c-topbar-toggler" type="button"><i class="fa fa-ellipsis-v"></i></button>
                 </div>

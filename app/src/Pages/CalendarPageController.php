@@ -28,6 +28,6 @@ class CalendarPageController extends PageController
     protected function init()
     {
         parent::init();
-        //Requireents moved to app/client/src/js/Jimev.Pages.CalendarPageController.js using webpack
+        //Requirements moved to app/client/src/js/Jimev.Pages.CalendarPageController.js using webpack
     }
 }

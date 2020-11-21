@@ -1,8 +1,9 @@
 ---
-Name: jimev
+Name: myproject
 ---
 SilverStripe\Core\Manifest\ModuleManifest:
   project: app
+
 
 ---
 Name: my-project-assetsflysystem
@@ -28,32 +29,3 @@ SilverStripe\Core\Injector\Injector:
       ResolutionFileIDHelpers:
         - '%$SilverStripe\Assets\FilenameParsing\HashFileIDHelper'
       VersionedStage: Stage
-
-SilverStripe\i18n\i18n:
-  default_locale: 'de_DE'
-
-SilverStripe\View\SSViewer:
-  #rewrite_hash_links: false
-  #See Using source_file_comments causes issues with ReadOnly field #6857 on https://github.com/silverstripe/silverstripe-framework/issues/6857
-  #source_file_comments: true
-  themes:
-    - '$public'
-  #  - 'simple'
-    - '$default'
-
-# Email
-Email:
-  admin_email: info@jimev.de
-
-# Limit allowed Link types
-gorriecoe\Link\Models\Link:
-  allowed_types:
-    - URL
-    - SiteTree
-
-# Customize CMS
-SilverStripe\Admin\LeftAndMain:
-  extra_requirements_css:
-  - 'app/client/dist/css/cms.css'
-  extra_requirements_javascript:
-  - 'app/client/dist/js/lang/de.js'

@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </div>
-            <% if PaginatedLatestNews %>
+            <% if LatestNews %>
             <div class="news c-content-box c-size-md c-bg-grey-1">
                 <div class="container">
                     <div class="c-content-title-1">
@@ -21,7 +21,7 @@
                         <div class="c-line-center"></div>
                     </div>
                     <div class="row" data-auto-height="true">
-                            <% loop PaginatedLatestNews %>
+                            <% loop LatestNews %>
                                 <% include Homepage_NewsSummary %>
                             <% end_loop %>
                     </div>

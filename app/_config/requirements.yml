@@ -19,8 +19,8 @@ Site\Templates\DeferedRequirements:
 #     - '/thirdparty/cubeportfolio/cubeportfolio.min.css'
       - '/thirdparty/cubeportfolio/jquery.cubeportfolio.min.js'
     Jimev\Pages\FotosPageController:
-      - '/thirdparty/cubeportfolio/jquery.cubeportfolio.js'
       - '//cdnjs.cloudflare.com/ajax/libs/galleria/1.5.7/galleria.min.js'
+      - '/thirdparty/cubeportfolio/jquery.cubeportfolio.js'
       - '/thirdparty/galleria/themes/twelve/galleria.twelve.min.js'
 #      - '/thirdparty/galleria/themes/twelve/galleria.twelve.min.css'
     Jimev\Pages\FaqPageController:

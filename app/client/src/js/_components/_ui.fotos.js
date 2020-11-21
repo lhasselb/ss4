@@ -2,7 +2,6 @@
 
 import $ from 'jquery';
 
-
 const FotosUI = (($) => {
 
     // Constants
@@ -41,16 +40,16 @@ const FotosUI = (($) => {
         lightboxCounter: '<div class="cbp-popup-lightbox-counter">{{current}} of {{total}}</div>',
     });
 
-
-
     class FotosUI {
         // Constructor
+        constructor(element) {
+            console.log("Fotos");
+        }
         // Static/Public methods
+
     }
 
-
     return FotosUI;
-
 })($);
 
 export default FotosUI;

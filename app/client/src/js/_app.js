@@ -372,9 +372,11 @@ const JangoApp = (($) => {
                 $('.jimAlarm').hide();
             } else $('.jimAlarm').show();
 
-            if (Cookies.get('alert') != id && valid()) {
-                $(id).modal('show');
-                Cookies.set('alert', id, { expires: 1 });
+            if(W.Cookies ) {
+                if (Cookies.get('alert') != id && valid()) {
+                    $(id).modal('show');
+                    Cookies.set('alert', id, { expires: 1 });
+                }
             }
             const checkHeader = setInterval(function() {
                 if(valid()) {

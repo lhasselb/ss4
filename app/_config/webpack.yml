@@ -5,7 +5,7 @@
 Site\Templates\WebpackTemplateProvider:
   SRC: app/client/src
   DIST: app/client/dist
-  HOSTNAME: ss4.test
+  HOSTNAME: docker.jimev.de
   PORT: 3000
   TYPESJS: app/client/src/js/types
   TYPESSCSS: app/client/src/scss/types

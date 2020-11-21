@@ -1,7 +1,7 @@
 "use strict";
 
 import $ from 'jquery';
-// Add this to Galler
+// Add this to Gallery
 import '../../scss/_plugins/_galleria.scss';
 
 // Galleria has been addded using CDN see requirements.yml
@@ -28,9 +28,10 @@ const GalleriaUI = (($) => {
      * //autoplay: 5000
      */
     const galleria = Galleria.configure({
+        //debug: true,
         variation: 'light',
         lightbox: true,
-        swipe: true,
+        swipe: 'disabled', //true
         // if you don't want Galleria to upscale any images, set this to 1.
         maxScaleRatio: 1.25,
         responsive: true,
@@ -74,7 +75,8 @@ const GalleriaUI = (($) => {
         Galleria.run('.galleria', { dataSource: GalleryData});
     }
 
-    function loadImage(imageId) {
+    function loadNextImage(imageId) {
+        console.log(imageId);
         $('.galleria-image-nav-right').hide();
         $.ajax({
             method: 'POST',
@@ -98,24 +100,20 @@ const GalleriaUI = (($) => {
     Galleria.ready(function(options) {
 
         var gallery = this;
-
         /**
          * Bind loadstart event fired when an image gets loaded
          */
         this.bind("loadstart", function(e) {
-            // Add the index to the page
-            $('span.index').html(e.index + 1);
-            gallery.lazyLoadChunks();
+            this.lazyLoad(e.index);
+            const next = parseInt(e.index) + 1;
             if ( !e.cached ) {
-                Galleria.log(e.index, ' is not cached.');
                 /* Load the next image */
-                const next = parseInt(e.index) + 1;
                 if (next < ImageIds.length ) {
-                    loadImage(ImageIds[next]);
+                    loadNextImage(ImageIds[next]);
                 }
-            } else {
-                Galleria.log('#', e.index, ' is cached.');
-            }
+            } else {}
+            // Add the index to the page
+            $('span.index').html(next);
         });
 
         /**
@@ -126,12 +124,14 @@ const GalleriaUI = (($) => {
                 gallery.pause();
             }
         });
-    });
 
-    class GalleriaUI {
-        // Constructor
-        // Static/Public methods
-    }
+        /**
+         * Use pause event
+         */
+        this.bind("pause", function(e) {
+            console.log("PAUSE" , e.index);
+        });
+    });
 
     return GalleriaUI;
 })($);

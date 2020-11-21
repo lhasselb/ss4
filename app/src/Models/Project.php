@@ -40,6 +40,7 @@ class Project extends DataObject
 
     private static $db = [
         'ProjectTitle' => 'Varchar(255)',
+        'Title'=> 'Varchar(255)',
         'URLSegment' => 'Varchar(255)',  //Not used any more ?
         'ProjectDescription' => 'Varchar(255)',
         'ProjectDate' => 'Date',
@@ -101,6 +102,7 @@ class Project extends DataObject
     public function populateDefaults()
     {
         $this->ProjectDate = date('Y-m-d');
+        $this->Title = $this->dbObject('ProjectTitle');
         parent::populateDefaults();
     }
 

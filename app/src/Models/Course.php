@@ -427,18 +427,24 @@ class Course extends DataObject
     {
         //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() numer of related sections for thise Course = ' . $this->Sections()->count());
         if ($this->isInDB()) {
-            //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() controller = ' . Controller::curr());
-            // For HomePage
-            if (Controller::curr() == 'HomePage_Controller') {
-                // HomepageSection is stored in related News
+            Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() controller = ' . Controller::curr());
+            // For HomePage & News Page
+            if (Controller::curr() == 'Jimev\Pages\HomePageController') {
+
                 $news = News::get()->byID($this->NewsID);
-                //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() related news = ' . $section);
                 if ($news->HomepageSectionID) {
-                    $section = SectionPage::get()->by_id($this->HomepageSectionID);
-                    //Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() news homepage section = ' . $section);
+                    $section = $this->Sections()->First();
+                    Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() news homepage section = ' . $section->Title);
                     return Controller::join_links($section->Link(), 'kurs', $this->URLSegment);
                 }
-            } else {
+            }
+            // TODO: Do we have or need a homepage section  default ?
+            else if ( Controller::curr() == 'Jimev\Pages\NewsPageController') {
+                $section = $this->Sections()->First();
+                Injector::inst()->get(LoggerInterface::class)->debug('Course - Link() news newspage section = ' . $section->Title);
+                return Controller::join_links($section->Link(), 'kurs', $this->URLSegment);
+            }
+            else {
                 // SectionPage
                 // Course is just linked once
                 if ($this->Sections()->count() == 1) {

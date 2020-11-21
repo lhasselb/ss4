@@ -39,7 +39,7 @@ class FotosPageController extends PageController
 
     public function album(HTTPRequest $request)
     {
-        //Injector::inst()->get(LoggerInterface::class)->debug('FotosPageController - gallery ID = ' . $request->param('ID') . '  image ID = ' . $request->postVar('ImageID'));
+        Injector::inst()->get(LoggerInterface::class)->debug('FotosPageController - gallery ID = ' . $request->param('ID') . '  image ID = ' . $request->postVar('ImageID'));
         // Fetch the ID from the URL
         $gallery = Gallery::get()->byID($request->param('ID'));
         if (!$gallery) {
@@ -57,9 +57,21 @@ class FotosPageController extends PageController
             'Total' => $total,
             'AlbumName' => $gallery->AlbumName,
             'AlbumDescription' => $gallery->AlbumDescription];
+
+        foreach ($data as $key => $value) {
+            Injector::inst()->get(LoggerInterface::class)
+                ->debug('FotosPageController - key[ ' . $key . '] = ' . $value);
+        }
+
+
         if ($request->isAjax()) {
             if ($request->isPost()) {
                 $imageId = $request->postVar('ImageID');
+
+                Injector::inst()
+                ->get(LoggerInterface::class)
+                ->debug('FotosPageController - imageID = ' . $imageId);
+
                 $galleryImage = GalleryImage::get()->byID($imageId);
                 $image = $gallery->getGalleryImageJson($galleryImage);
                 // We render only one image as requested by Post parameter

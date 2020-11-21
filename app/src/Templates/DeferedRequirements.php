@@ -56,11 +56,11 @@ class DeferedRequirements implements TemplateGlobalProvider
 
         // Main libs
         if (!$config['nojquery']) {
-            DeferedRequirements::loadJS('//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js');
+            DeferedRequirements::loadJS('//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js');
         }
         // App libs
         if (!$config['nojqueryeasing']) {
-            DeferedRequirements::loadJS('//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js');
+            DeferedRequirements::loadJS('//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js');
         }
         if (!$config['nocookiesjs']) {
             DeferedRequirements::loadJS('//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js');
@@ -86,9 +86,10 @@ class DeferedRequirements implements TemplateGlobalProvider
 
         // Load configured custom assets (if any)
         if (isset($config['custom_requirements'][$class])) {
-            //Injector::inst()->get(LoggerInterface::class)->debug('DeferedRequirements - custom_requirements for ' . $class);
+            Injector::inst()->get(LoggerInterface::class)
+            ->debug('DeferedRequirements - custom_requirements for ' . $class);
             foreach ($config['custom_requirements'][$class] as $file) {
-                //Injector::inst()->get(LoggerInterface::class)->debug($file);
+                Injector::inst()->get(LoggerInterface::class)->debug($file);
                 if (strpos($file, '.css')) {
                     DeferedRequirements::loadCSS($file);
                 }
@@ -109,12 +110,14 @@ class DeferedRequirements implements TemplateGlobalProvider
         );
 
         if (file_exists(Path::join($dir, 'css', $class . '.css'))) {
-            //Injector::inst()->get(LoggerInterface::class)->debug('DeferedRequirements add ' . Path::join($dir, 'css', $class . '.css'));
+            //Injector::inst()->get(LoggerInterface::class)
+            //->debug('DeferedRequirements add ' . Path::join($dir, 'css', $class . '.css'));
             DeferedRequirements::loadCSS($class . '.css');
         }
 
         if (file_exists(Path::join($dir, 'js', $class . '.js'))) {
-            //Injector::inst()->get(LoggerInterface::class)->debug('DeferedRequirements add ' . Path::join($dir, 'js', $class . '.js'));
+            //Injector::inst()->get(LoggerInterface::class)
+            //->debug('DeferedRequirements add ' . Path::join($dir, 'js', $class . '.js'));
             DeferedRequirements::loadJS($class . '.js');
         }
 

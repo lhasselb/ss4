@@ -1,6 +1,6 @@
 # Find mappings
 Dynamic\ClassNameUpdate\BuildTasks\DatabaseClassNameUpdateTask:
-  upgrade_file_path: "/Users/tommy/Sites/ss4/app/_config/upgrade.yml"
+  upgrade_file_path: "/var/www/html/app/_config/upgrade.yml"
 
 mappings:
 # Admins

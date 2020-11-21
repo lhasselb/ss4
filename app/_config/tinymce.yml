@@ -6,5 +6,7 @@ SilverStripe\Forms\HTMLEditor\TinyMCEConfig:
 # Add links to Dataobject's
 FLxLabs\DataObjectLink\DataObjectLinkModalExtension:
   classes:
-    Jimev\Models\Gallery: 'Fotoalbum'
-    Jimev\Models\Project: 'Projekt'
+    Jimev\Models\Gallery:
+      name: 'Fotoalbum'
+    Jimev\Models\Project:
+      name: 'Projekt'

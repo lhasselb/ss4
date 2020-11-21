@@ -61,6 +61,7 @@ class Gallery extends DataObject
     private static $table_name = 'Gallery';
 
     private static $db = [
+        'Title'=> 'Varchar(255)',
         'ImageFolder' => 'Varchar()',
         'AlbumName' => 'Varchar()',
         'AlbumDescription' => 'Varchar()',
@@ -319,7 +320,7 @@ class Gallery extends DataObject
         // TODO: Add a configuration enum to select a sort order if required
         // enum('Title','ImageID','SortOrder');
         // return $this->GalleryImages()->sort('SortOrder');
-        return $this->GalleryImages();
+        return $this->GalleryImages()->sort('SortOrder');
     }
 
     public function getFirstGalleryImage()
@@ -337,7 +338,8 @@ class Gallery extends DataObject
     public function getGalleryImageJson($galleryImage = null)
     {
         if (!$galleryImage) {
-            return Convert::array2json($this->getSortedGalleryImages()->first()->getGalleryImage());
+            //return Convert::array2json($this->getSortedGalleryImages()->first()->getGalleryImage());
+            return json_encode($this->getSortedGalleryImages()->first()->getGalleryImage());
         }
         return Convert::array2json($galleryImage->getGalleryImage());
     }
@@ -346,7 +348,8 @@ class Gallery extends DataObject
     {
         $list = $this->getSortedGalleryImages()->column('ID');
         // Encode an array as a JSON encoded string, like ["value", "value"]
-        return Convert::array2json($list);
+        // return Convert::array2json($list);
+        return json_encode($list);
     }
 
     public function onBeforeWrite()

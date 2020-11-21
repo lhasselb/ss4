@@ -61,7 +61,7 @@ class HTMLEditorFieldLocation_Config implements HTMLEditorFieldLocation_ConfigIn
     {
         TinyMCEConfig::get($name)
             // Add a specific stylesheet
-            ->setContentCSS([ '/app/client/dist/css/LocationPageTinyMCE.css' ])
+            ->setContentCSS([ '/resources/app/client/dist/css/LocationPageTinyMce.css' ])
             ->setOption('importcss_append', true)
             // Added to remove default styles
             ->setOption('style_formats', [])
